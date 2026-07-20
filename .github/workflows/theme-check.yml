@@ -1,0 +1,29 @@
+name: Theme Check
+
+# Lints theme code on every PR. Merge is gated on this passing.
+# Auto-deploy on merge is handled by Shopify's GitHub integration
+# (branch -> theme sync), NOT by a deploy step here.
+
+on:
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+
+jobs:
+  theme-check:
+    name: shopify theme check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli@latest
+
+      - name: Run theme check
+        run: shopify theme check --fail-level error
