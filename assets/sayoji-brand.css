@@ -135,3 +135,8 @@ hr,
 .sayoji-size-note { margin: 0.5rem 0 0; font-size: 0.875rem; color: rgb(var(--sayoji-stone)); }
 .sayoji-size-guide { margin: 0.75rem 0; }
 .sayoji-size-guide__link { font-size: 0.8125rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* R-10 attach on the cart surfaces (drawer + cart page). */
+.cart-drawer__attach { padding: 0 var(--drawer-padding, 1.5rem); }
+.cart-drawer__attach .sayoji-attach { border-bottom: 0; }
+.cart__attach { margin-bottom: 2rem; }

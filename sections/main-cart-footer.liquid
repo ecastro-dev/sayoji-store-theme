@@ -23,6 +23,18 @@
   data-id="{{ section.id }}"
 >
   <div class="page-width">
+    {%- comment -%}
+      R-10 attach — cart-page surface, mirrors the drawer. Only when the cart holds
+      exactly one item (source_module 'cart_crosssell'; tomoe-tee guarded out, R-04a).
+    {%- endcomment -%}
+    {%- if cart.item_count == 1 -%}
+      <div class="cart__attach">
+        {%- render 'pdp-attach-module',
+          source_product: cart.items.first.product,
+          source_module: 'cart_crosssell'
+        -%}
+      </div>
+    {%- endif -%}
     <div class="cart__footer isolate section-{{ section.id }}-padding">
       {%- if settings.show_cart_note -%}
         <cart-note class="cart__note field">
