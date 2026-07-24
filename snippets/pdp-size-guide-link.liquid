@@ -1,0 +1,27 @@
+{%- comment -%}
+  pdp-size-guide-link.liquid — R-07 module 12. Size guide link → provider chart
+  page now (measured guide is 🚫 GATED on A-026 and swaps in later, content-only).
+  Emits `size_guide_open` (event-ready, R-11; no GA4 destination here).
+{%- endcomment -%}
+<p class="sayoji-size-guide">
+  <a
+    href="{{ pages['size-guide'].url | default: '/pages/size-guide' }}"
+    class="sayoji-size-guide__link"
+    data-sayoji-size-guide
+    data-design-id="{{ product.metafields.custom.design_id }}"
+  >
+    Size guide
+  </a>
+</p>
+<script>
+  (function () {
+    var link = document.currentScript.previousElementSibling.querySelector('[data-sayoji-size-guide]');
+    if (!link || link.dataset.sayojiBound) return;
+    link.dataset.sayojiBound = '1';
+    link.addEventListener('click', function () {
+      if (window.Sayoji && Sayoji.trackSizeGuideOpen) {
+        Sayoji.trackSizeGuideOpen({ design_id: link.dataset.designId || null });
+      }
+    });
+  })();
+</script>

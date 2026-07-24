@@ -1,0 +1,10 @@
+{%- comment -%}
+  pdp-size-note.liquid — R-07 module 3 addendum. The size-up note sits with the
+  size selector. Per R-09 hoodies carry the provider runs-small disclaimer
+  VERBATIM; tees carry none. Content-plane, per-product, driven by
+  product.metafields.custom.size_note (so a tee never shows a hoodie's note).
+{%- endcomment -%}
+{%- assign note = product.metafields.custom.size_note -%}
+{%- if note != blank -%}
+  <p class="sayoji-size-note">{{ note }}</p>
+{%- endif -%}
