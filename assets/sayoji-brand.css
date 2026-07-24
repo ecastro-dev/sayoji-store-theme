@@ -1,0 +1,71 @@
+/*
+  sayoji-brand.css — A-061 global re-skin layer (Brand-Identity-Direction §7).
+  What Dawn's theme settings can't express on their own: the Stone label colour,
+  Jost display tracking, hairline dividers, roomier editorial rhythm, and the
+  square-everything safety net. Palette/type families + radii come from
+  config/settings_data.json; this file only adds what settings leave on the table.
+
+  Tokens (Brand §1.2 / §7.2):
+    Ink   #1C1B1F   — text / accent / buttons        (scheme text/button)
+    Bone  #EDE6D5   — page ground                     (scheme background)
+    Stone #7C6E60   — labels / eyebrows / captions / rules ONLY (fails 4.5:1 — never body/legal)
+*/
+
+:root {
+  --sayoji-stone: 124 110 96;      /* #7C6E60 */
+  --sayoji-hairline: rgba(124, 110, 96, 0.35);
+  --sayoji-rhythm-desktop: 12rem;  /* ~ up to 128px section padding, restraint = whitespace */
+  --sayoji-rhythm-mobile: 6rem;
+}
+
+/* --- Display type: Jost tracking per §2.4 (H1 +0.06em · H2 +0.04em · caps +0.14em) --- */
+h1, .h1 { letter-spacing: 0.06em; font-weight: 400; }
+h2, .h2 { letter-spacing: 0.04em; font-weight: 400; }
+h3, .h3, h4, .h4 { letter-spacing: 0.02em; font-weight: 400; }
+
+/* Eyebrows / captions / meta labels — Stone, wide-tracked caps. Never body copy. */
+.sayoji-eyebrow,
+.caption-with-letter-spacing {
+  color: rgb(var(--sayoji-stone));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: var(--font-body-family);
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+/* --- Hairline dividers: 1px Stone, generous margins; no boxed cards/heavy borders --- */
+hr,
+.sayoji-rule {
+  border: 0;
+  border-top: 1px solid var(--sayoji-hairline);
+  margin: 3rem 0;
+}
+
+/* --- Square everything (D-N3 safety net over the settings radii) --- */
+.card,
+.card__inner,
+.card--standard .card__media,
+.media,
+.button,
+.price,
+.global-media-settings {
+  border-radius: 0 !important;
+}
+
+/* --- Motion discipline (§4.4): fades only, 200–300ms; kill any bounce/parallax feel --- */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-trigger.animate--slide-in { animation-duration: 0.28s; animation-timing-function: ease-out; }
+}
+
+/* --- Buttons: wide-tracked caps, single primary discipline (§2.4 / §4.4) --- */
+.button {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-body-family);
+  font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+/* Selection uses Ink/Bone, not the browser default */
+::selection { background: #1C1B1F; color: #EDE6D5; }
