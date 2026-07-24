@@ -1,0 +1,39 @@
+{%- comment -%}
+  pdp-spec-block.liquid — R-07 module 7, the fact leg. Desktop-expanded /
+  mobile-accordion, emits `spec_block_expand` (event-ready per R-11; no GA4
+  destination here). Content is per-garment (R-09) and MUST differ tee vs hoodie
+  — the tee fibre claim must never appear on a hoodie — so it is content-plane,
+  driven by product.metafields.custom.spec_block (rich text). The position always
+  renders; content fills it. No banned adjectives (G6): facts only.
+{%- endcomment -%}
+
+<details class="sayoji-spec" data-sayoji-spec open data-design-id="{{ product.metafields.custom.design_id }}">
+  <summary class="sayoji-spec__summary">
+    <span class="h5">Product details</span>
+    <span class="sayoji-spec__toggle" aria-hidden="true"></span>
+  </summary>
+  <div class="sayoji-spec__body rte">
+    {%- assign spec = product.metafields.custom.spec_block -%}
+    {%- if spec != blank -%}
+      {{ spec | metafield_tag }}
+    {%- else -%}
+      {%- comment -%} Populatable by content change alone (R-09 facts). {%- endcomment -%}
+    {%- endif -%}
+  </div>
+</details>
+
+<script>
+  (function () {
+    var el = document.currentScript.previousElementSibling;
+    while (el && !(el.matches && el.matches('[data-sayoji-spec]'))) { el = el.previousElementSibling; }
+    if (!el || el.dataset.sayojiBound) return;
+    el.dataset.sayojiBound = '1';
+    // On mobile, collapse by default (accordion); desktop stays open.
+    if (window.matchMedia && window.matchMedia('(max-width: 749px)').matches) { el.open = false; }
+    el.addEventListener('toggle', function () {
+      if (el.open && window.Sayoji && Sayoji.trackSpecExpand) {
+        Sayoji.trackSpecExpand({ design_id: el.dataset.designId || null });
+      }
+    });
+  })();
+</script>

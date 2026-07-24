@@ -1,0 +1,121 @@
+{%- comment -%}
+  pdp-attach-module.liquid — R-07 module 5 / R-10 attach (hard gate G5).
+
+  ONE product · real image · real reason · single primary action. NOT a
+  recommendation grid. Used on up to three surfaces, each passing a distinct
+  source_module:
+    - PDP, below add-to-cart      → 'pdp_crosssell'
+    - cart drawer / page (1 item) → 'cart_crosssell'
+    - post-ATC mobile confirm     → 'pdp_crosssell'
+
+  Params:
+    source_product : the product the shopper is looking at (defaults to `product`)
+    source_module  : attribution string for the emitted add_to_cart
+
+  Target resolution (R-10):
+    1. metafield override  source_product.metafields.custom.attach_product (product ref)
+    2. else the built-in R-10 handle map below
+  Reason line: source_product.metafields.custom.attach_reason (content-plane).
+
+  R-04a: tomoe-tee is NEVER a target. If resolution lands on it, render nothing.
+  Copy bans (R-10): no "Complete the look" / "Customers also bought" / urgency.
+{%- endcomment -%}
+
+{%- liquid
+  assign src = source_product | default: product
+  assign source_module = source_module | default: 'pdp_crosssell'
+
+  assign target = src.metafields.custom.attach_product.value
+
+  unless target
+    case src.handle
+      when 'kumo-tee'
+        assign target = all_products['kumo-hoodie']
+      when 'ward-seal-tee'
+        assign target = all_products['seigaiha-hoodie']
+      when 'sumi-tee'
+        assign target = all_products['seigaiha-hoodie']
+      when 'tomoe-tee'
+        assign target = all_products['seigaiha-hoodie']
+      when 'kumo-hoodie'
+        assign target = all_products['kumo-tee']
+      when 'seigaiha-hoodie'
+        assign target = src.metafields.custom.attach_product.value
+    endcase
+  endunless
+
+  assign reason = src.metafields.custom.attach_reason
+-%}
+
+{%- comment -%} R-04a hard guard: tomoe-tee is never an attach target. {%- endcomment -%}
+{%- if target == blank or target.handle == 'tomoe-tee' or target.available == false -%}
+  {%- comment -%} No valid target → render nothing (absent, not an empty box). {%- endcomment -%}
+{%- else -%}
+  {%- assign tvar = target.selected_or_first_available_variant -%}
+  <div
+    class="sayoji-attach"
+    data-sayoji-attach
+    data-source-module="{{ source_module }}"
+    data-design-id="{{ target.metafields.custom.design_id }}"
+    data-product-type="{{ target.type }}"
+    data-price="{{ tvar.price }}"
+  >
+    <p class="sayoji-eyebrow sayoji-attach__eyebrow">Pairs with</p>
+    <div class="sayoji-attach__body">
+      <a class="sayoji-attach__media" href="{{ target.url }}" tabindex="-1" aria-hidden="true">
+        {%- if target.featured_media -%}
+          {{ target.featured_media | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100,200,300', alt: target.featured_media.alt | escape }}
+        {%- endif -%}
+      </a>
+      <div class="sayoji-attach__info">
+        <a class="sayoji-attach__title" href="{{ target.url }}">{{ target.title | escape }}</a>
+        {%- if reason != blank -%}
+          <p class="sayoji-attach__reason">{{ reason }}</p>
+        {%- endif -%}
+        <p class="sayoji-attach__price">{{ tvar.price | money }}</p>
+        <form
+          action="{{ routes.cart_add_url }}"
+          method="post"
+          enctype="multipart/form-data"
+          class="sayoji-attach__form"
+          data-sayoji-attach-form
+        >
+          <input type="hidden" name="id" value="{{ tvar.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button
+            type="submit"
+            class="button button--secondary sayoji-attach__add"
+            {% unless tvar.available %}disabled{% endunless %}
+          >
+            {%- if tvar.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.currentScript.previousElementSibling;
+      if (!root || !root.hasAttribute('data-sayoji-attach')) {
+        root = document.querySelector('[data-sayoji-attach][data-source-module="{{ source_module }}"]');
+      }
+      if (!root) return;
+      var form = root.querySelector('[data-sayoji-attach-form]');
+      if (!form || form.dataset.sayojiBound) return;
+      form.dataset.sayojiBound = '1';
+      form.addEventListener('submit', function () {
+        if (window.Sayoji && Sayoji.trackAddToCart) {
+          Sayoji.trackAddToCart({
+            source_module: root.dataset.sourceModule,
+            design_id: root.dataset.designId || null,
+            product_type: root.dataset.productType || null,
+            variant_id: form.querySelector('[name="id"]').value,
+            price: parseInt(root.dataset.price, 10) || 0
+          });
+        }
+        // Standard form POST proceeds → /cart. Event fires fire-and-forget first.
+      });
+    })();
+  </script>
+{%- endif -%}

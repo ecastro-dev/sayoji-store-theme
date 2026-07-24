@@ -69,3 +69,69 @@ hr,
 
 /* Selection uses Ink/Bone, not the browser default */
 ::selection { background: #1C1B1F; color: #EDE6D5; }
+
+/* ============================================================
+   R-07 PDP authored modules (A-061)
+   ============================================================ */
+
+/* Module 5 — attach (R-10). One product, quiet, single primary action. */
+.sayoji-attach {
+  margin: 1.5rem 0;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--sayoji-hairline);
+  border-bottom: 1px solid var(--sayoji-hairline);
+}
+.sayoji-attach__eyebrow { margin: 0 0 0.75rem; }
+.sayoji-attach__body { display: flex; gap: 1rem; align-items: center; }
+.sayoji-attach__media { flex: 0 0 84px; display: block; }
+.sayoji-attach__media img { width: 84px; height: 84px; object-fit: cover; display: block; }
+.sayoji-attach__info { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.sayoji-attach__title { font-family: var(--font-heading-family); letter-spacing: 0.02em; text-decoration: none; }
+.sayoji-attach__reason { margin: 0; font-size: 0.9375rem; color: rgb(var(--sayoji-stone)); }
+.sayoji-attach__price { margin: 0.25rem 0 0.5rem; font-weight: 500; }
+.sayoji-attach__add { width: auto; padding: 0.6rem 1.4rem; }
+
+/* Module 6 — shipping micro-line (plain, not fine print). */
+.sayoji-shipping-line { margin: 1rem 0; font-size: 0.9375rem; }
+
+/* Module 7 — spec block (desktop expanded / mobile accordion). */
+.sayoji-spec { margin: 1.5rem 0; border-top: 1px solid var(--sayoji-hairline); }
+.sayoji-spec__summary {
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; padding: 1rem 0; list-style: none;
+}
+.sayoji-spec__summary::-webkit-details-marker { display: none; }
+.sayoji-spec__toggle { position: relative; width: 14px; height: 14px; flex: 0 0 14px; }
+.sayoji-spec__toggle::before,
+.sayoji-spec__toggle::after {
+  content: ''; position: absolute; background: currentColor; transition: transform 0.2s ease;
+}
+.sayoji-spec__toggle::before { top: 6px; left: 0; width: 14px; height: 1px; }
+.sayoji-spec__toggle::after { top: 0; left: 6px; width: 1px; height: 14px; }
+.sayoji-spec[open] .sayoji-spec__toggle::after { transform: scaleY(0); }
+.sayoji-spec__body { padding-bottom: 1rem; }
+
+/* Module 9 — construction imagery (absent until A-026; only styles if populated). */
+.sayoji-construction { display: grid; gap: 0.5rem; margin: 1.5rem 0; }
+.sayoji-construction__item { margin: 0; }
+.sayoji-construction__item img { width: 100%; height: auto; display: block; }
+
+/* Module 10 — trust row (fact-only, no stars). */
+.sayoji-trust {
+  list-style: none; margin: 1.5rem 0; padding: 1.25rem 0;
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+  border-top: 1px solid var(--sayoji-hairline);
+}
+.sayoji-trust__label {
+  font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgb(var(--sayoji-stone));
+}
+
+/* Module 11 — AI-imagery disclosure line. */
+.sayoji-ai-disclosure { margin: 1rem 0; font-size: 0.8125rem; color: rgb(var(--sayoji-stone)); }
+.sayoji-ai-disclosure a { color: inherit; text-underline-offset: 2px; }
+
+/* Module 3 addendum — size-up note; Module 12 — size guide link. */
+.sayoji-size-note { margin: 0.5rem 0 0; font-size: 0.875rem; color: rgb(var(--sayoji-stone)); }
+.sayoji-size-guide { margin: 0.75rem 0; }
+.sayoji-size-guide__link { font-size: 0.8125rem; letter-spacing: 0.06em; text-transform: uppercase; }

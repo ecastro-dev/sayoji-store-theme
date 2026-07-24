@@ -1,0 +1,20 @@
+{%- comment -%}
+  pdp-construction-slot.liquid — R-07 module 9, construction-detail imagery.
+
+  🚫 GATED on A-026 (physical sample verification). This is an ABSENT SLOT, not a
+  placeholder and not an empty box: it renders whatever is in
+  product.metafields.custom.construction_imagery (a list of images) and nothing
+  when that is empty. Populatable by a content change alone — no template edit —
+  the moment the Hub clears A-026. Until then the metafield stays unset and this
+  module renders nothing.
+{%- endcomment -%}
+{%- assign shots = product.metafields.custom.construction_imagery.value -%}
+{%- if shots != blank -%}
+  <div class="sayoji-construction">
+    {%- for shot in shots -%}
+      <figure class="sayoji-construction__item">
+        {{ shot | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400,600,900', alt: shot.alt | escape }}
+      </figure>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
