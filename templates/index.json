@@ -41,7 +41,7 @@
       "block_order": ["eyebrow", "heading", "button"],
       "settings": {
         "image": "shopify://shop_images/A066-home-hero-2880x1000.png",
-        "image_focal_desktop": "25% center",
+        "image_focal_desktop": "75% center",
         "image_focal_mobile": "25% center",
         "image_overlay_opacity": 30,
         "image_height": "large",
@@ -126,12 +126,12 @@
         "image_focal_mobile": "25% center",
         "image_overlay_opacity": 40,
         "image_height": "medium",
-        "desktop_content_position": "middle-center",
+        "desktop_content_position": "middle-left",
         "show_text_box": false,
         "image_behavior": "none",
-        "desktop_content_alignment": "center",
+        "desktop_content_alignment": "left",
         "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
+        "mobile_content_alignment": "left",
         "stack_images_on_mobile": false,
         "show_text_below": false
       }
