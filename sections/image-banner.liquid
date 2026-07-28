@@ -27,6 +27,22 @@
   #Banner-{{ section.id }}::after {
     opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
   }
+
+  {%- comment -%}
+    A-067: Dawn pins `.media > img { object-position: center center }` and the Files API exposes no
+    focal point, so the crop anchor is set here, per breakpoint. The A-066 banners are 2.88:1 with the
+    subject right and the overlay type's negative space left; a wide banner cropped into a near-square
+    mobile viewport cannot keep both, so the breakpoints are anchored independently.
+  {%- endcomment -%}
+  #Banner-{{ section.id }} .banner__media > img {
+    object-position: {{ section.settings.image_focal_mobile | default: 'center center' }};
+  }
+
+  @media screen and (min-width: 750px) {
+    #Banner-{{ section.id }} .banner__media > img {
+      object-position: {{ section.settings.image_focal_desktop | default: 'center center' }};
+    }
+  }
 {%- endstyle -%}
 
 {%- liquid
@@ -184,6 +200,37 @@
       "type": "image_picker",
       "id": "image_2",
       "label": "t:sections.image-banner.settings.image_2.label"
+    },
+    {
+      "type": "select",
+      "id": "image_focal_desktop",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "25% center", "label": "Center-left" },
+        { "value": "left center", "label": "Left" },
+        { "value": "75% center", "label": "Center-right" },
+        { "value": "right center", "label": "Right" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" }
+      ],
+      "default": "center center",
+      "label": "Crop anchor (desktop)",
+      "info": "Which part of the image survives the crop when the section is wider or taller than the source."
+    },
+    {
+      "type": "select",
+      "id": "image_focal_mobile",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "25% center", "label": "Center-left" },
+        { "value": "left center", "label": "Left" },
+        { "value": "75% center", "label": "Center-right" },
+        { "value": "right center", "label": "Right" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" }
+      ],
+      "default": "center center",
+      "label": "Crop anchor (mobile)"
     },
     {
       "type": "range",

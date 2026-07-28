@@ -40,6 +40,9 @@
       },
       "block_order": ["eyebrow", "heading", "button"],
       "settings": {
+        "image": "shopify://shop_images/A066-home-hero-2880x1000.png",
+        "image_focal_desktop": "25% center",
+        "image_focal_mobile": "25% center",
         "image_overlay_opacity": 30,
         "image_height": "large",
         "desktop_content_position": "bottom-left",
@@ -118,6 +121,9 @@
       },
       "block_order": ["eyebrow", "heading", "text", "button"],
       "settings": {
+        "image": "shopify://shop_images/A066-editorial-band-2880x1000.png",
+        "image_focal_desktop": "25% center",
+        "image_focal_mobile": "25% center",
         "image_overlay_opacity": 40,
         "image_height": "medium",
         "desktop_content_position": "middle-center",
@@ -150,7 +156,7 @@
       "settings": {
         "title": "Shop by garment",
         "heading_size": "h2",
-        "image_ratio": "landscape",
+        "image_ratio": "portrait",
         "columns_desktop": 2,
         "color_scheme": "scheme-1",
         "show_view_all": false,
