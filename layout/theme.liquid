@@ -280,7 +280,21 @@
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
     {{ 'sayoji-brand.css' | asset_url | stylesheet_tag }}
-    {%- comment -%} A-061 event-readiness shim (R-11 payload shape; no GA4/consent destination — R-11/R-12) {%- endcomment -%}
+    {%- comment -%}
+      R-11 measurement (A-011). SayojiPage is the ONLY place the storefront's page facts —
+      page_type, design_id, product_type — cross from Liquid into JS; sayoji-events.js reads them
+      to put the §3.5 common dimensions on every event. It must be defined BEFORE the shim loads.
+    {%- endcomment -%}
+    <script>
+      window.SayojiPage = {
+        page_type: {{ request.page_type | json }},
+        design_id: {{ product.metafields.custom.design_id.value | default: nil | json }},
+        product_type: {{ product.type | default: nil | json }},
+        price: {{ product.selected_or_first_available_variant.price | default: nil | json }},
+        variant_size: {{ product.selected_or_first_available_variant.title | default: nil | json }},
+        template: {{ template.name | json }}
+      };
+    </script>
     <script src="{{ 'sayoji-events.js' | asset_url }}" defer="defer"></script>
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 

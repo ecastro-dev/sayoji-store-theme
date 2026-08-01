@@ -104,7 +104,19 @@
       var form = root.querySelector('[data-sayoji-attach-form]');
       if (!form || form.dataset.sayojiBound) return;
       form.dataset.sayojiBound = '1';
-      form.addEventListener('submit', function () {
+
+      // R-11: add via AJAX, not the plain form POST. The POST navigated to /cart immediately, which
+      // raced the add_to_cart event — trackAddToCart has to read /cart.js first, so the tab could
+      // (and under a slow cart read, did) unload before the payload reached the pixel. Losing that
+      // event loses `source_module` + `is_second_item`, which is the whole attach read (G5).
+      // Behaviour is unchanged for the shopper: item added, then /cart.
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var button = form.querySelector('[type="submit"]');
+        if (button) button.setAttribute('aria-disabled', 'true');
+
+        // Emit first — trackAddToCart is synchronous, so the payload is published before the add
+        // request is even issued and cannot be lost to the navigation below.
         if (window.Sayoji && Sayoji.trackAddToCart) {
           Sayoji.trackAddToCart({
             source_module: root.dataset.sourceModule,
@@ -114,7 +126,16 @@
             price: parseInt(root.dataset.price, 10) || 0
           });
         }
-        // Standard form POST proceeds → /cart. Event fires fire-and-forget first.
+
+        fetch('{{ routes.cart_add_url }}.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            items: [{ id: form.querySelector('[name="id"]').value, quantity: 1 }]
+          })
+        }).finally(function () {
+          window.location.href = '{{ routes.cart_url }}';
+        });
       });
     })();
   </script>
