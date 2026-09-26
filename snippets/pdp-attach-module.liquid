@@ -12,12 +12,12 @@
     source_product : the product the shopper is looking at (defaults to `product`)
     source_module  : attribution string for the emitted add_to_cart
 
-  Target resolution (R-10):
-    1. metafield override  source_product.metafields.custom.attach_product (product ref)
-    2. else the built-in R-10 handle map below
+  Target resolution: source_product.metafields.custom.attach_product (product ref) only.
+  (R2-01 removed the pre-rebrand built-in handle map; R2-09 replaces this module.)
   Reason line: source_product.metafields.custom.attach_reason (content-plane).
 
-  R-04a: tomoe-tee is NEVER a target. If resolution lands on it, render nothing.
+  Guard: a target tagged `no-attach-target`, the current product, or an unavailable
+  product never renders.
   Copy bans (R-10): no "Complete the look" / "Customers also bought" / urgency.
 {%- endcomment -%}
 
@@ -27,28 +27,11 @@
 
   assign target = src.metafields.custom.attach_product.value
 
-  unless target
-    case src.handle
-      when 'kumo-tee'
-        assign target = all_products['kumo-hoodie']
-      when 'ward-seal-tee'
-        assign target = all_products['seigaiha-hoodie']
-      when 'sumi-tee'
-        assign target = all_products['seigaiha-hoodie']
-      when 'tomoe-tee'
-        assign target = all_products['seigaiha-hoodie']
-      when 'kumo-hoodie'
-        assign target = all_products['kumo-tee']
-      when 'seigaiha-hoodie'
-        assign target = src.metafields.custom.attach_product.value
-    endcase
-  endunless
 
   assign reason = src.metafields.custom.attach_reason
 -%}
 
-{%- comment -%} R-04a hard guard: tomoe-tee is never an attach target. {%- endcomment -%}
-{%- if target == blank or target.handle == 'tomoe-tee' or target.available == false -%}
+{%- if target == blank or target.tags contains 'no-attach-target' or target.id == src.id or target.available == false -%}
   {%- comment -%} No valid target → render nothing (absent, not an empty box). {%- endcomment -%}
 {%- else -%}
   {%- assign tvar = target.selected_or_first_available_variant -%}
