@@ -52,7 +52,7 @@ body { font-size: 16px; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgb(var(--sayoji-muted));
-  font-size: 0.8125rem;
+  font-size: 13px;
 }
 
 /* Episode device `SEASON 01 ／ EP.01`. Accent only at 19px bold (the §10.2 contrast rule); every other use is
@@ -98,7 +98,7 @@ hr,
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 /* --- Motion: fades 200–300ms, no bounce/parallax (unchanged) --- */
@@ -128,12 +128,12 @@ hr,
 .sayoji-attach__media img { width: 84px; height: 84px; object-fit: cover; display: block; }
 .sayoji-attach__info { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
 .sayoji-attach__title { font-family: var(--font-heading-family); letter-spacing: 0.02em; text-decoration: none; color: inherit; }
-.sayoji-attach__reason { margin: 0; font-size: 0.9375rem; color: rgb(var(--sayoji-muted)); }
+.sayoji-attach__reason { margin: 0; font-size: 15px; color: rgb(var(--sayoji-muted)); }
 .sayoji-attach__price { margin: 0.25rem 0 0.5rem; font-weight: 500; }
 .sayoji-attach__add { width: auto; padding: 0.6rem 1.4rem; }
 
 /* Module 6 — shipping micro-line (plain, not fine print). */
-.sayoji-shipping-line { margin: 1rem 0; font-size: 0.9375rem; }
+.sayoji-shipping-line { margin: 1rem 0; font-size: 15px; }
 
 /* Module 7 — spec block (desktop expanded / mobile accordion). */
 .sayoji-spec { margin: 1.5rem 0; border-top: 1px solid var(--sayoji-hairline); }
@@ -164,18 +164,18 @@ hr,
   border-top: 1px solid var(--sayoji-hairline);
 }
 .sayoji-trust__label {
-  font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
   color: rgb(var(--sayoji-muted));
 }
 
 /* Module 11 — AI-imagery disclosure line. */
-.sayoji-ai-disclosure { margin: 1rem 0; font-size: 0.8125rem; color: rgb(var(--sayoji-muted)); }
+.sayoji-ai-disclosure { margin: 1rem 0; font-size: 13px; color: rgb(var(--sayoji-muted)); }
 .sayoji-ai-disclosure a { color: inherit; text-underline-offset: 2px; }
 
 /* Module 3 addendum — size-up note; Module 12 — size guide link. */
-.sayoji-size-note { margin: 0.5rem 0 0; font-size: 0.875rem; color: rgb(var(--sayoji-muted)); }
+.sayoji-size-note { margin: 0.5rem 0 0; font-size: 14px; color: rgb(var(--sayoji-muted)); }
 .sayoji-size-guide { margin: 0.75rem 0; }
-.sayoji-size-guide__link { font-size: 0.8125rem; letter-spacing: 0.06em; text-transform: uppercase; color: inherit; }
+.sayoji-size-guide__link { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: inherit; }
 
 /* R-10 attach on the cart surfaces (drawer + cart page). */
 .cart-drawer__attach { padding: 0 var(--drawer-padding, 1.5rem); }
