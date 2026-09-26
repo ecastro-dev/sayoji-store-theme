@@ -83,13 +83,13 @@
         "episode_link": {
           "type": "custom_liquid",
           "settings": {
-            "custom_liquid": "{% render sayoji-episode-link %}"
+            "custom_liquid": "{% render 'sayoji-episode-link' %}"
           }
         },
         "compact_shipping": {
           "type": "custom_liquid",
           "settings": {
-            "custom_liquid": "{% render sayoji-compact-shipping %}"
+            "custom_liquid": "{% render 'sayoji-compact-shipping' %}"
           }
         }
       },
