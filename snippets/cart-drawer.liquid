@@ -510,8 +510,8 @@
 
         {%- comment -%}
           R-10 attach — cart surface. Shows ONLY when the cart holds exactly one item
-          (disappears at two), source_module 'cart_crosssell'. tomoe-tee is guarded out
-          as a target inside the snippet (R-04a). Re-evaluated on every drawer re-render.
+          (disappears at two), source_module 'cart_crosssell'. Target guards live
+          inside the snippet. Re-evaluated on every drawer re-render.
         {%- endcomment -%}
         {%- if cart.item_count == 1 -%}
           <div class="cart-drawer__attach">

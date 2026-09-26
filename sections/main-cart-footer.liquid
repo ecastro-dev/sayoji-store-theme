@@ -25,7 +25,7 @@
   <div class="page-width">
     {%- comment -%}
       R-10 attach — cart-page surface, mirrors the drawer. Only when the cart holds
-      exactly one item (source_module 'cart_crosssell'; tomoe-tee guarded out, R-04a).
+      exactly one item (source_module 'cart_crosssell'; target guards in the snippet).
     {%- endcomment -%}
     {%- if cart.item_count == 1 -%}
       <div class="cart__attach">
