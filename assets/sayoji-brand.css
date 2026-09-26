@@ -181,3 +181,11 @@ hr,
 .cart-drawer__attach { padding: 0 var(--drawer-padding, 1.5rem); }
 .cart-drawer__attach .sayoji-attach { border-bottom: 0; }
 .cart__attach { margin-bottom: 2rem; }
+
+/* R2-04 cart threshold line: plain text. */
+.sayoji-threshold { margin: 0 0 1rem; font-size: 15px; color: rgb(var(--sayoji-ink)); }
+
+/* R2-07 search zero-results state. */
+.sayoji-search-empty { text-align: center; margin: 2rem auto 0; }
+.sayoji-search-empty__heading { margin: 0 0 0.75rem; }
+.sayoji-search-empty__body { margin: 0 0 1.5rem; }

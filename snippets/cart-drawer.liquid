@@ -540,6 +540,7 @@
             {%- endif -%}
           </div>
 
+          {%- render 'sayoji-shipping-threshold' -%}
           <div class="totals" role="status">
             <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
             <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>

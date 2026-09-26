@@ -102,6 +102,7 @@
               >
               <label class="field__label" for="Search-In-Template">{{ 'general.search.search' | t }}</label>
               <input name="options[prefix]" type="hidden" value="last">
+              <input name="type" type="hidden" value="product">
 
               {%- if settings.predictive_search_enabled -%}
                 <div class="predictive-search predictive-search--search-template" tabindex="-1" data-predictive-search>
@@ -140,8 +141,13 @@
             </p>
           {%- endif -%}
         {%- endunless -%}
+        {%- comment -%} R2-07 zero-results state (products only: the forms search type=product). {%- endcomment -%}
         {%- if search.results_count == 0 and search.filters == empty -%}
-          <p role="status">{{ 'templates.search.no_results' | t: terms: search.terms }}</p>
+          <div class="sayoji-search-empty" role="status" data-sayoji-search-empty>
+            <h2 class="sayoji-search-empty__heading">Nothing matches that.</h2>
+            <p class="sayoji-search-empty__body">Everything we make is in Season 01.</p>
+            <a class="button" href="{{ routes.collections_url }}/season-01">Browse Season 01</a>
+          </div>
         {%- endif -%}
       {%- endif -%}
     </div>
