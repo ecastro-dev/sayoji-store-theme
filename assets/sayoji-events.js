@@ -172,13 +172,14 @@
       });
   }
 
-  // cart_composition is the ordered list of design_ids in the cart (§3.5). Line items carry the
-  // design through a cart line property when we control the add; otherwise fall back to the
-  // product-type/handle we do have, so the field is never silently empty.
+  // cart_composition is the ordered list of design_ids in the cart (§3.5). R2-10: the design comes from
+  // custom.design_id via SayojiPage.designs (theme.liquid). A product without one falls back to its handle so
+  // the field is never silently empty; R2-03's G5 checklist keeps that from happening on a live product.
   function composition(cart) {
+    var designs = page().designs || {};
     return (cart.items || [])
       .map(function (i) {
-        return (i.properties && i.properties._design_id) || i.handle || String(i.product_id);
+        return designs[i.product_id] || (i.properties && i.properties._design_id) || i.handle || String(i.product_id);
       })
       .join('|');
   }

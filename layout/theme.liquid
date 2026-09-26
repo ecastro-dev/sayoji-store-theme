@@ -338,7 +338,18 @@
         product_type: {{ product.type | default: nil | json }},
         price: {{ product.selected_or_first_available_variant.price | default: nil | json }},
         variant_size: {{ product.selected_or_first_available_variant.title | default: nil | json }},
-        template: {{ template.name | json }}
+        template: {{ template.name | json }},
+        {%- comment -%}
+          R2-10: product id -> custom.design_id for every live product, so cart-side events (cart_composition)
+          name designs from the metafield, never from a handle. Launch catalogue < 50 products.
+        {%- endcomment -%}
+        designs: {
+          {%- for p in collections.all.products limit: 50 -%}
+            {%- if p.metafields.custom.design_id.value != blank -%}
+              {{ p.id | json }}: {{ p.metafields.custom.design_id.value | json }}{% unless forloop.last %},{% endunless %}
+            {%- endif -%}
+          {%- endfor -%}
+        }
       };
     </script>
     <script src="{{ 'sayoji-events.js' | asset_url }}" defer="defer"></script>
