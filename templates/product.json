@@ -85,11 +85,18 @@
           "settings": {
             "custom_liquid": "{% render sayoji-episode-link %}"
           }
+        },
+        "compact_shipping": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render sayoji-compact-shipping %}"
+          }
         }
       },
       "block_order": [
         "title",
         "price",
+        "compact_shipping",
         "variant_picker",
         "size_note",
         "buy_buttons",
