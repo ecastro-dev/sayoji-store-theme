@@ -25,7 +25,7 @@
           "type": "text",
           "settings": {
             "heading": "",
-            "subtext": "<p>Some imagery on this site is created with AI. <a href=\"/pages/how-we-make-our-images\">How we make our images</a></p>"
+            "subtext": "<p><a href=\"/pages/how-we-make-our-images\" title=\"How we make our images\">Product images are digital mockups.</a></p>"
           }
         }
       },
