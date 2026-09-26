@@ -71,7 +71,11 @@ body { font-size: 16px; }
 .sayoji-display--accent { color: var(--collection-accent); font-size: max(24px, 1em); }
 
 /* Secondary / meta / small legal: Muted passes 4.5:1, so it may carry captions and legal. */
-.caption, .caption-large, .product__tax, .footer__copyright, .sayoji-meta { color: rgb(var(--sayoji-muted)); }
+.caption, .caption-large, .sayoji-meta { color: rgb(var(--sayoji-muted)); }
+/* P1/P7: on the dark (Faded Ink) schemes, text and meta are full Faded Bone — Muted fails there. */
+.color-scheme-3 .caption, .color-scheme-3 .caption-large, .color-scheme-3 .sayoji-meta,
+.color-scheme-4 .caption, .color-scheme-4 .caption-large, .color-scheme-4 .sayoji-meta,
+.footer__copyright, .copyright__content, .copyright__content a { color: rgb(var(--color-foreground)); }
 
 /* --- Dividers: 2px Faded Ink rule on section heads; 1px Muted elsewhere --- */
 .title-wrapper-with-link,
@@ -204,3 +208,16 @@ hr,
 /* R2-08 3b compact shipping line: mobile only. */
 .sayoji-compact-shipping { margin: 4px 0 0; font-family: var(--font-body-family); font-size: 13px; line-height: 1.3; color: rgb(var(--sayoji-muted)); white-space: nowrap; }
 @media screen and (min-width: 750px) { .sayoji-compact-shipping { display: none; } }
+
+/* P4 (Hub pixel pass): the announcement bar in the utility face. */
+.announcement-bar__message, .announcement-bar__message span, .announcement-bar__link {
+  font-family: var(--font-utility-family); font-stretch: 80%; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em; font-size: 13px;
+}
+
+/* P5 (Hub ruling): product-card and attach-row titles in Archivo 600 caps +0.12em (the utility voice).
+   PDP and collection titles stay Anton. */
+.card__heading, .card__heading a, .sayoji-attach__title {
+  font-family: var(--font-utility-family); font-stretch: 80%; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em; font-size: 15px; line-height: 1.3;
+}
