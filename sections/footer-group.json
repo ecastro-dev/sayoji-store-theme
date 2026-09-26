@@ -25,7 +25,7 @@
           "type": "text",
           "settings": {
             "heading": "",
-            "subtext": "<p>Some imagery on this site is created with AI. <a href=\"/pages/how-we-make-our-images\">How we make our images<\/a><\/p>"
+            "subtext": "<p>Some imagery on this site is created with AI. <a href=\"/pages/how-we-make-our-images\">How we make our images</a></p>"
           }
         }
       },
@@ -34,7 +34,7 @@
         "ai_disclosure"
       ],
       "settings": {
-        "color_scheme": "scheme-1",
+        "color_scheme": "scheme-3",
         "newsletter_enable": true,
         "newsletter_heading": "Subscribe to our emails",
         "enable_follow_on_shop": true,
