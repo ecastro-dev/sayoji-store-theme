@@ -1,0 +1,47 @@
+{%- comment -%}
+  sayoji-season-hero — R2-06 home hero: the Season 01 key art (H-6, A-099) and nothing else. No claim text.
+  Texture is baked into the image (R2-05); no CSS layer. Until H-6 lands the slot is absent (no placeholder).
+{%- endcomment -%}
+{%- if section.settings.image != blank -%}
+  <div class="sayoji-hero">
+    {{
+      section.settings.image
+      | image_url: width: 2880
+      | image_tag:
+        widths: '390, 750, 1100, 1500, 2200, 2880',
+        sizes: '100vw',
+        alt: section.settings.image.alt,
+        loading: 'eager',
+        fetchpriority: 'high',
+        class: 'sayoji-hero__image'
+    }}
+  </div>
+  {%- if section.settings.image_mobile != blank -%}
+    <div class="sayoji-hero sayoji-hero--mobile">
+      {{
+        section.settings.image_mobile
+        | image_url: width: 1170
+        | image_tag: widths: '390, 780, 1170', sizes: '100vw', alt: section.settings.image_mobile.alt, class: 'sayoji-hero__image'
+      }}
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{%- if section.settings.image_mobile != blank -%}
+  {%- style -%}
+    @media screen and (max-width: 749px) { .sayoji-hero:not(.sayoji-hero--mobile) { display: none; } }
+    @media screen and (min-width: 750px) { .sayoji-hero--mobile { display: none; } }
+  {%- endstyle -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Sayoji season hero",
+  "class": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Key art" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Key art, mobile crop (optional)" }
+  ],
+  "presets": [{ "name": "Sayoji season hero" }]
+}
+{% endschema %}

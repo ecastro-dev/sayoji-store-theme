@@ -1,0 +1,66 @@
+{%- comment -%}
+  sayoji-episode-panels — R2-06 home collection panels (the BH-10 split panels, re-keyed to collections).
+  One panel per collection link in the chosen menu (season-episodes). Adding a collection = adding a menu item;
+  no theme change. Each panel carries its own collection's accent on the eyebrow (19px bold, R2-05).
+{%- endcomment -%}
+{{ 'sayoji-collection.css' | asset_url | stylesheet_tag }}
+
+{%- assign panel_menu = linklists[section.settings.menu] -%}
+<div class="sayoji-panels color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="page-width">
+    <div class="sayoji-panels__grid">
+      {%- for link in panel_menu.links -%}
+        {%- if link.type == 'collection_link' and link.object != blank -%}
+          {%- liquid
+            assign c = link.object
+            assign accent = c.metafields.custom.accent.value | default: '#241F22'
+          -%}
+          <a class="sayoji-panel" href="{{ c.url }}" style="--collection-accent: {{ accent }};" data-sayoji-panel="{{ c.handle }}">
+            {%- if c.image -%}
+              <div class="sayoji-panel__media">
+                {{
+                  c.image
+                  | image_url: width: 1200
+                  | image_tag: widths: '375, 750, 1100', sizes: '(min-width: 990px) 50vw, 100vw', alt: c.title, loading: 'lazy'
+                }}
+              </div>
+            {%- endif -%}
+            <div class="sayoji-panel__text">
+              {%- if c.metafields.custom.season.value != blank -%}
+                <p class="sayoji-episode sayoji-episode--accent">
+                  SEASON {{ c.metafields.custom.season.value }}
+                  {%- if c.metafields.custom.episode.value != blank %} ／ {{ c.metafields.custom.episode.value }}{% endif -%}
+                </p>
+              {%- endif -%}
+              <h2 class="sayoji-panel__title">{{ link.title | escape }}</h2>
+              {%- if c.metafields.custom.premise.value != blank -%}
+                <p class="sayoji-panel__premise">{{ c.metafields.custom.premise.value | escape }}</p>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{%- style -%}
+  .section-{{ section.id }}-padding { padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px; padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px; }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding { padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px; }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Sayoji episode panels",
+  "class": "section",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Episodes menu", "default": "season-episodes" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:sections.all.colors.label", "default": "scheme-1" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 80 }
+  ],
+  "presets": [{ "name": "Sayoji episode panels" }]
+}
+{% endschema %}

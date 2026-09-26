@@ -34,6 +34,7 @@ body { font-size: 16px; }
 /* Header wordmark: SAYOJI in Anton as live text (D-9, the launch wordmark). A logo set in theme settings
    replaces it with no template edit (A-098). */
 .header__heading-link .h2 {
+  color: rgb(var(--sayoji-ink));
   font-family: var(--font-heading-family);
   font-size: 32px;
   letter-spacing: 0.02em;
