@@ -1,0 +1,16 @@
+{%- comment -%}
+  R2-04 cart threshold line (drawer + page). Plain text: no progress bar, no animation, no timer.
+    0 < subtotal < $60  ->  "Free US shipping over $60. You're $<60 − subtotal> away."
+    subtotal >= $60     ->  "Your order ships free."
+  Rendered inside each surface's re-rendered region, so it follows every cart change.
+{%- endcomment -%}
+{%- liquid
+  assign sayoji_threshold = 6000
+  assign sayoji_subtotal = cart.items_subtotal_price
+-%}
+{%- if sayoji_subtotal >= sayoji_threshold -%}
+  <p class="sayoji-threshold" data-sayoji-threshold>Your order ships free.</p>
+{%- elsif sayoji_subtotal > 0 -%}
+  {%- assign sayoji_remaining = sayoji_threshold | minus: sayoji_subtotal -%}
+  <p class="sayoji-threshold" data-sayoji-threshold>Free US shipping over $60. You're {{ sayoji_remaining | money_without_currency | prepend: '$' }} away.</p>
+{%- endif -%}
