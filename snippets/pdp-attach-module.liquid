@@ -77,39 +77,5 @@
     {%- endif -%}
   </div>
 
-  <script>
-    (function () {
-      var root = document.currentScript.previousElementSibling;
-      if (!root || !root.hasAttribute('data-sayoji-attach')) return;
-      root.querySelectorAll('[data-sayoji-attach-form]').forEach(function (form) {
-        if (form.dataset.sayojiBound) return;
-        form.dataset.sayojiBound = '1';
-        var row = form.closest('[data-sayoji-attach-row]');
-
-        // R-11: add via AJAX, not the plain form POST (a navigating POST raced the add_to_cart event).
-        // Emit first: trackAddToCart is synchronous and reads the cart count cached before this add.
-        form.addEventListener('submit', function (e) {
-          e.preventDefault();
-          var button = form.querySelector('[type="submit"]');
-          if (button) button.setAttribute('aria-disabled', 'true');
-          if (window.Sayoji && Sayoji.trackAddToCart) {
-            Sayoji.trackAddToCart({
-              source_module: root.dataset.sourceModule,
-              design_id: row.dataset.designId || null,
-              product_type: row.dataset.productType || null,
-              variant_id: form.querySelector('[name="id"]').value,
-              price: parseInt(row.dataset.price, 10) || 0
-            });
-          }
-          fetch('{{ routes.cart_add_url }}.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ items: [{ id: form.querySelector('[name="id"]').value, quantity: 1 }] })
-          }).finally(function () {
-            window.location.href = '{{ routes.cart_url }}';
-          });
-        });
-      });
-    })();
-  </script>
+  {%- comment -%} Adds are handled by the delegated R2-09 listener in sayoji-events.js (survives drawer re-renders). {%- endcomment -%}
 {%- endif -%}

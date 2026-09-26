@@ -284,8 +284,55 @@
     // for every visitor who never walks to /cart.
     document.addEventListener('click', function (e) {
       var t = e.target.closest && e.target.closest('[id="cart-icon-bubble"], .cart-drawer__opener');
-      if (t) setTimeout(S.trackViewCart, 300);
+      if (t) {
+        setOrigin('shopper'); // R2-09: a drawer the shopper opens is surface (3), cart_crosssell
+        setTimeout(S.trackViewCart, 300);
+      }
     });
+
+    /*
+      R2-09 attach adds (every surface). Delegated at the document, capture phase, because the drawer
+      re-renders by innerHTML and inline <script> in re-rendered markup never runs: a per-module binding
+      left drawer attach rows posting natively with NO add_to_cart event. Emit first (trackAddToCart is
+      synchronous and reads the count cached before this add), add via AJAX, then go to /cart.
+      source_module: in a drawer that opened automatically after a PDP add (data-open-origin="pdp_add")
+      the row is the post-ATC state -> pdp_crosssell; a drawer the shopper opened, or the cart page ->
+      the module's own value (cart_crosssell); on the PDP -> pdp_crosssell.
+    */
+    document.addEventListener(
+      'submit',
+      function (e) {
+        var form = e.target;
+        if (!form || !form.matches || !form.matches('[data-sayoji-attach-form]')) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (form.dataset.sayojiBusy) return;
+        form.dataset.sayojiBusy = '1';
+        var root = form.closest('[data-sayoji-attach]');
+        var row = form.closest('[data-sayoji-attach-row]');
+        var drawer = form.closest('cart-drawer');
+        var sourceModule = root && root.dataset.sourceModule;
+        if (drawer) sourceModule = drawer.dataset.openOrigin === 'pdp_add' ? 'pdp_crosssell' : 'cart_crosssell';
+        var idEl = form.querySelector('[name="id"]');
+        var button = form.querySelector('[type="submit"]');
+        if (button) button.setAttribute('aria-disabled', 'true');
+        S.trackAddToCart({
+          source_module: sourceModule || null,
+          design_id: (row && row.dataset.designId) || null,
+          product_type: (row && row.dataset.productType) || null,
+          variant_id: idEl ? idEl.value : null,
+          price: (row && parseInt(row.dataset.price, 10)) || 0,
+        });
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ items: [{ id: idEl ? idEl.value : null, quantity: 1 }] }),
+        }).finally(function () {
+          window.location.href = '/cart';
+        });
+      },
+      true
+    );
 
     // Main PDP add-to-cart. Dawn's <product-form> submits via AJAX (cart drawer), so there is no
     // navigation to race. Only the ATTACH adds were instrumented before this — which meant the
@@ -296,6 +343,7 @@
         var form = e.target;
         if (!form || !form.action || form.action.indexOf('/cart/add') === -1) return;
         if (form.closest('[data-sayoji-attach]')) return; // attach module emits its own, with its source_module
+        setOrigin('pdp_add'); // R2-09: the drawer this add opens is the post-ATC state
         var idEl = form.querySelector('[name="id"]');
         var qtyEl = form.querySelector('[name="quantity"]');
         S.trackAddToCart({
@@ -310,6 +358,12 @@
       },
       true
     );
+  }
+
+  // R2-09: record how the cart drawer was opened, on the drawer itself.
+  function setOrigin(origin) {
+    var d = document.querySelector('cart-drawer');
+    if (d) d.dataset.openOrigin = origin;
   }
 
   if (document.readyState === 'loading') {
