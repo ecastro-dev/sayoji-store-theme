@@ -10,10 +10,29 @@
 {
   "sections": {
     "banner": {
-      "type": "main-collection-banner",
+      "type": "sayoji-collection-banner",
+      "blocks": {
+        "chip-tees": {
+          "type": "chip",
+          "settings": {
+            "label": "Tees",
+            "link": "shopify://collections/tees"
+          }
+        },
+        "chip-hoodies": {
+          "type": "chip",
+          "settings": {
+            "label": "Hoodies",
+            "link": "shopify://collections/hoodies"
+          }
+        }
+      },
+      "block_order": [
+        "chip-tees",
+        "chip-hoodies"
+      ],
       "settings": {
-        "show_collection_description": true,
-        "show_collection_image": false,
+        "chips_collection": "season-01",
         "color_scheme": "scheme-1"
       }
     },
@@ -26,7 +45,7 @@
         "image_ratio": "portrait",
         "image_shape": "default",
         "show_secondary_image": true,
-        "show_vendor": true,
+        "show_vendor": false,
         "show_rating": false,
         "quick_add": "none",
         "enable_filtering": true,

@@ -1,0 +1,84 @@
+{%- comment -%}
+  sayoji-collection-banner — R2-06 (Store Build Handoff v2). One banner for every collection; no per-collection
+  template. Everything comes from the collection's own data:
+    eyebrow  SEASON <custom.season> ／ <custom.episode>  (utility face; accent at 19px bold, R2-05)
+    title    collection.title (Anton)
+    premise  custom.premise (hidden when empty)
+    image    collection.image (H-6; hidden when empty)
+  Chips (Tees / Hoodies) render only on the collection named in the section setting (season-01).
+{%- endcomment -%}
+{{ 'sayoji-collection.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign season = collection.metafields.custom.season.value
+  assign episode = collection.metafields.custom.episode.value
+  assign premise = collection.metafields.custom.premise.value
+-%}
+<div class="sayoji-collection-banner color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width sayoji-collection-banner__inner{% if collection.image %} sayoji-collection-banner__inner--media{% endif %}">
+    <div class="sayoji-collection-banner__text">
+      {%- if season != blank -%}
+        <p class="sayoji-episode sayoji-episode--accent sayoji-collection-banner__eyebrow">
+          SEASON {{ season }}
+          {%- if episode != blank %} ／ {{ episode }}{% endif -%}
+        </p>
+      {%- endif -%}
+      <h1 class="sayoji-collection-banner__title">{{ collection.title | escape }}</h1>
+      {%- if premise != blank -%}
+        <p class="sayoji-collection-banner__premise">{{ premise | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.chips_collection != blank and collection.handle == section.settings.chips_collection -%}
+        <nav class="sayoji-chips" aria-label="Garment">
+          {%- for block in section.blocks -%}
+            {%- if block.settings.link != blank -%}
+              <a class="sayoji-chip" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+                {{- block.settings.label | escape -}}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+    </div>
+    {%- if collection.image -%}
+      <div class="sayoji-collection-banner__media">
+        {{
+          collection.image
+          | image_url: width: 1500
+          | image_tag: widths: '375, 750, 1100, 1500', sizes: '(min-width: 990px) 50vw, 100vw', alt: collection.title
+        }}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Sayoji collection banner",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "chips_collection",
+      "label": "Show garment chips on collection (handle)",
+      "default": "season-01"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Chip",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ]
+}
+{% endschema %}

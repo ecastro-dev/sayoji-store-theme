@@ -1,0 +1,31 @@
+/* R2-06 collection banner, episode panels, season hero, chips. Tokens: sayoji-brand.css (R2-05). */
+.sayoji-collection-banner { padding: 48px 0 32px; }
+@media screen and (min-width: 750px) { .sayoji-collection-banner { padding: 80px 0 40px; } }
+.sayoji-collection-banner__inner { display: grid; gap: 2rem; align-items: end; }
+@media screen and (min-width: 990px) { .sayoji-collection-banner__inner--media { grid-template-columns: 1fr 1fr; } }
+.sayoji-collection-banner__eyebrow { margin: 0 0 0.75rem; }
+.sayoji-collection-banner__title { margin: 0; border-bottom: 2px solid rgb(var(--sayoji-ink)); padding-bottom: 0.75rem; }
+.sayoji-collection-banner__premise { margin: 1rem 0 0; max-width: 36em; }
+.sayoji-collection-banner__media img { width: 100%; height: auto; display: block; }
+
+.sayoji-chips { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+.sayoji-chip {
+  font-family: var(--font-utility-family); font-stretch: 80%; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.875rem;
+  color: rgb(var(--sayoji-ink)); text-decoration: none;
+  border: 1px solid rgb(var(--sayoji-ink)); padding: 0.6rem 1.1rem; border-radius: 0;
+}
+.sayoji-chip:hover { background: rgb(var(--sayoji-ink)); color: rgb(var(--sayoji-bone)); }
+
+.sayoji-panels__grid { display: grid; gap: 1.5rem; }
+@media screen and (min-width: 750px) { .sayoji-panels__grid { grid-template-columns: repeat(2, 1fr); } }
+.sayoji-panel { display: block; color: inherit; text-decoration: none; }
+.sayoji-panel__media img { width: 100%; height: auto; display: block; aspect-ratio: 4 / 5; object-fit: cover; }
+.sayoji-panel__text { padding-top: 1rem; }
+.sayoji-panel__text .sayoji-episode { margin: 0 0 0.5rem; }
+.sayoji-panel__title { margin: 0; }
+.sayoji-panel__premise { margin: 0.5rem 0 0; }
+
+.sayoji-hero img { width: 100%; height: auto; display: block; }
+
+.sayoji-card__fleece { margin: 0.25rem 0 0; font-size: 0.875rem; }
