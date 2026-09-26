@@ -517,6 +517,8 @@
           <div class="cart-drawer__attach">
             {%- render 'pdp-attach-module',
               source_product: cart.items.first.product,
+              surface: 'cart',
+              default_size: cart.items.first.variant.title,
               source_module: 'cart_crosssell'
             -%}
           </div>

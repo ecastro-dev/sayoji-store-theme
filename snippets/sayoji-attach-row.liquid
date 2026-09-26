@@ -1,0 +1,47 @@
+{%- comment -%}
+  One R2-09 attach row: named product, real image, reason line, size, one add action.
+  Size defaults to the shopper's current size (`default_size`, else the source PDP's selected variant), so the
+  cross-sell never silently adds the first size.
+  Params: target (product) · reason (string) · lane ('G' | 'C') · default_size (optional variant title)
+{%- endcomment -%}
+{%- liquid
+  assign want_size = default_size | default: product.selected_or_first_available_variant.title
+  assign tvar = target.selected_or_first_available_variant
+  for v in target.variants
+    if v.available and v.title == want_size
+      assign tvar = v
+      break
+    endif
+  endfor
+  assign row_media = target.featured_media
+-%}
+<div
+  class="sayoji-attach__row"
+  data-sayoji-attach-row
+  data-lane="{{ lane }}"
+  data-target-handle="{{ target.handle }}"
+  data-design-id="{{ target.metafields.custom.design_id.value }}"
+  data-product-type="{{ target.type }}"
+  data-price="{{ tvar.price }}"
+>
+  <a class="sayoji-attach__media" href="{{ target.url }}" tabindex="-1" aria-hidden="true">
+    {%- if row_media -%}
+      {{ row_media | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100,200,300', alt: row_media.alt | escape }}
+    {%- endif -%}
+  </a>
+  <div class="sayoji-attach__info">
+    <a class="sayoji-attach__title" href="{{ target.url }}">{{ target.title | escape }}</a>
+    <p class="sayoji-attach__reason">{{ reason | escape }}</p>
+    <p class="sayoji-attach__price">{{ tvar.price | money }}</p>
+    <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="sayoji-attach__form" data-sayoji-attach-form>
+      <label class="visually-hidden" for="AttachSize-{{ lane }}-{{ target.id }}">Size</label>
+      <select class="sayoji-attach__size" id="AttachSize-{{ lane }}-{{ target.id }}" name="id">
+        {%- for v in target.variants -%}
+          <option value="{{ v.id }}" {% if v.id == tvar.id %}selected{% endif %} {% unless v.available %}disabled{% endunless %}>{{ v.title }}</option>
+        {%- endfor -%}
+      </select>
+      <input type="hidden" name="quantity" value="1">
+      <button type="submit" class="button button--secondary sayoji-attach__add">Add to cart</button>
+    </form>
+  </div>
+</div>

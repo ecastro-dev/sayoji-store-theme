@@ -1,0 +1,9 @@
+{%- comment -%} R2-08 module 10 — episode link: a text link to the collection, never a product grid. {%- endcomment -%}
+{%- assign el_collection = product.metafields.custom.collection.value -%}
+{%- if el_collection != blank -%}
+  <p class="sayoji-episode-link" data-sayoji-module="10">
+    <a href="{{ el_collection.url }}">
+      See all of {% if el_collection.metafields.custom.episode.value != blank %}{{ el_collection.metafields.custom.episode.value }} {% endif %}{{ el_collection.title | escape }} →
+    </a>
+  </p>
+{%- endif -%}

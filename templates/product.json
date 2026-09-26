@@ -12,13 +12,6 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "vendor": {
-          "type": "text",
-          "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "uppercase"
-          }
-        },
         "title": {
           "type": "title",
           "settings": {}
@@ -69,12 +62,6 @@
           "type": "description",
           "settings": {}
         },
-        "construction_slot": {
-          "type": "custom_liquid",
-          "settings": {
-            "custom_liquid": "{% render 'pdp-construction-slot' %}"
-          }
-        },
         "trust_row": {
           "type": "custom_liquid",
           "settings": {
@@ -92,10 +79,15 @@
           "settings": {
             "custom_liquid": "{% render 'pdp-size-guide-link' %}"
           }
+        },
+        "episode_link": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render sayoji-episode-link %}"
+          }
         }
       },
       "block_order": [
-        "vendor",
         "title",
         "price",
         "variant_picker",
@@ -105,7 +97,7 @@
         "shipping_line",
         "spec_block",
         "description",
-        "construction_slot",
+        "episode_link",
         "trust_row",
         "ai_disclosure",
         "size_guide"
