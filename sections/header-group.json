@@ -20,18 +20,10 @@
             "text": "Free US shipping over $60 — $4.95 flat below.",
             "link": ""
           }
-        },
-        "p1-deploy-test": {
-          "type": "announcement",
-          "settings": {
-            "text": "P-1 deploy test",
-            "link": ""
-          }
         }
       },
       "block_order": [
-        "announcement-bar-0",
-        "p1-deploy-test"
+        "announcement-bar-0"
       ],
       "settings": {
         "auto_rotate": false,

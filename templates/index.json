@@ -167,5 +167,5 @@
       }
     }
   },
-  "order": ["hero", "editorial", "featured", "categories"]
+  "order": ["hero", "featured", "editorial", "categories"]
 }
