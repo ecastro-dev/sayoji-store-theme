@@ -1,40 +1,83 @@
 /*
-  sayoji-brand.css — A-061 global re-skin layer (Brand-Identity-Direction §7).
-  What Dawn's theme settings can't express on their own: the Stone label colour,
-  Jost display tracking, hairline dividers, roomier editorial rhythm, and the
-  square-everything safety net. Palette/type families + radii come from
-  config/settings_data.json; this file only adds what settings leave on the table.
+  sayoji-brand.css — R2-05 re-skin to Brand Identity v2 §10.2 (approved by Ed, S39). Values are applied, not
+  interpreted. Palette and families come from config/settings_data.json (color schemes, Anton / Archivo); this
+  file carries what settings can't express. --collection-accent and the utility face are declared in theme.liquid.
 
-  Tokens (Brand §1.2 / §7.2):
-    Ink   #1C1B1F   — text / accent / buttons        (scheme text/button)
-    Bone  #EDE6D5   — page ground                     (scheme background)
-    Stone #7C6E60   — labels / eyebrows / captions / rules ONLY (fails 4.5:1 — never body/legal)
+  Tokens (§10.2):
+    Faded Bone #F3EAD6  page ground            Faded Ink #241F22  text / buttons / footer ground (13.56:1)
+    Muted      #6A5F52  captions, meta, small legal (5.21:1)
+    --collection-accent  display only: >= 24px, or >= 19px bold. Never body text or small links.
 */
 
 :root {
-  --sayoji-stone: 124 110 96;      /* #7C6E60 */
-  --sayoji-hairline: rgba(124, 110, 96, 0.35);
-  --sayoji-rhythm-desktop: 12rem;  /* ~ up to 128px section padding, restraint = whitespace */
-  --sayoji-rhythm-mobile: 6rem;
+  --sayoji-bone: 243 234 214;      /* #F3EAD6 */
+  --sayoji-ink: 36 31 34;          /* #241F22 */
+  --sayoji-muted: 106 95 82;       /* #6A5F52 */
+  --sayoji-hairline: rgb(var(--sayoji-muted));
 }
 
-/* --- Display type: Jost tracking per §2.4 (H1 +0.06em · H2 +0.04em · caps +0.14em) --- */
-h1, .h1 { letter-spacing: 0.06em; font-weight: 400; }
-h2, .h2 { letter-spacing: 0.04em; font-weight: 400; }
-h3, .h3, h4, .h4 { letter-spacing: 0.02em; font-weight: 400; }
+/* --- Type (§10.2): Anton display, caps, +0.02em · H1 56–72 · H2 32–40 · body 16–17 · price 18–20 --- */
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, .h0, .hxl, .hxxl {
+  font-family: var(--font-heading-family);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+h1, .h1 { font-size: clamp(56px, 2.5vw + 36px, 72px); line-height: 1.02; }
+.h0 { font-size: clamp(56px, 2.5vw + 36px, 72px); line-height: 1.02; }
+h2, .h2 { font-size: clamp(32px, 1.25vw + 24px, 40px); line-height: 1.05; }
+body { font-size: 16px; }
+@media screen and (min-width: 990px) { body { font-size: 17px; } }
+.price .price-item, .price__regular .price-item { font-size: 18px; }
+@media screen and (min-width: 990px) { .price .price-item, .price__regular .price-item { font-size: 20px; } }
 
-/* Eyebrows / captions / meta labels — Stone, wide-tracked caps. Never body copy. */
+/* Header wordmark: SAYOJI in Anton as live text (D-9, the launch wordmark). A logo set in theme settings
+   replaces it with no template edit (A-098). */
+.header__heading-link .h2 {
+  font-family: var(--font-heading-family);
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* --- Utility / episode face: Archivo width 80 (75–87), caps, +0.12em --- */
+.sayoji-utility,
 .sayoji-eyebrow,
 .caption-with-letter-spacing {
-  color: rgb(var(--sayoji-stone));
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-family: var(--font-body-family);
+  font-family: var(--font-utility-family);
+  font-stretch: 80%;
   font-weight: 500;
-  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--sayoji-muted));
+  font-size: 0.8125rem;
 }
 
-/* --- Hairline dividers: 1px Stone, generous margins; no boxed cards/heavy borders --- */
+/* Episode device `SEASON 01 ／ EP.01`. Accent only at 19px bold (the §10.2 contrast rule); every other use is
+   Faded Ink. These are the ONLY classes that consume --collection-accent. */
+.sayoji-episode {
+  font-family: var(--font-utility-family);
+  font-stretch: 80%;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--sayoji-ink));
+}
+.sayoji-episode--accent { color: var(--collection-accent); }
+.sayoji-display--accent { color: var(--collection-accent); font-size: max(24px, 1em); }
+
+/* Secondary / meta / small legal: Muted passes 4.5:1, so it may carry captions and legal. */
+.caption, .caption-large, .product__tax, .footer__copyright, .sayoji-meta { color: rgb(var(--sayoji-muted)); }
+
+/* --- Dividers: 2px Faded Ink rule on section heads; 1px Muted elsewhere --- */
+.title-wrapper-with-link,
+.sayoji-section-head {
+  border-bottom: 2px solid rgb(var(--sayoji-ink));
+  padding-bottom: 0.75rem;
+}
 hr,
 .sayoji-rule {
   border: 0;
@@ -42,33 +85,30 @@ hr,
   margin: 3rem 0;
 }
 
-/* --- Square everything (D-N3 safety net over the settings radii) --- */
-.card,
-.card__inner,
-.card--standard .card__media,
-.media,
-.button,
-.price,
-.global-media-settings {
+/* --- Radius 0 everywhere (print, not app) --- */
+.card, .card__inner, .card--standard .card__media, .media, .button, .price, .global-media-settings,
+.field__input, .select__select, .product-form__input input[type='radio'] + label {
   border-radius: 0 !important;
 }
 
-/* --- Motion discipline (§4.4): fades only, 200–300ms; kill any bounce/parallax feel --- */
+/* --- Buttons: solid Faded Ink, Faded Bone label (color schemes), square, Archivo 600 caps +0.12em --- */
+.button, .shopify-payment-button__button--unbranded {
+  font-family: var(--font-body-family);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+/* --- Motion: fades 200–300ms, no bounce/parallax (unchanged) --- */
 @media (prefers-reduced-motion: no-preference) {
   .scroll-trigger.animate--slide-in { animation-duration: 0.28s; animation-timing-function: ease-out; }
 }
 
-/* --- Buttons: wide-tracked caps, single primary discipline (§2.4 / §4.4) --- */
-.button {
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-family: var(--font-body-family);
-  font-weight: 500;
-  font-size: 0.8125rem;
-}
+/* Banned surfaces (BH-10.2 carry): no badges, ratings, wishlist. Markup is removed; this is the safety net. */
+.badge, .card__badge, .rating, .rating-star, .rating-text, .rating-count { display: none !important; }
 
-/* Selection uses Ink/Bone, not the browser default */
-::selection { background: #1C1B1F; color: #EDE6D5; }
+::selection { background: rgb(var(--sayoji-ink)); color: rgb(var(--sayoji-bone)); }
 
 /* ============================================================
    R-07 PDP authored modules (A-061)
@@ -87,7 +127,7 @@ hr,
 .sayoji-attach__media img { width: 84px; height: 84px; object-fit: cover; display: block; }
 .sayoji-attach__info { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
 .sayoji-attach__title { font-family: var(--font-heading-family); letter-spacing: 0.02em; text-decoration: none; color: inherit; }
-.sayoji-attach__reason { margin: 0; font-size: 0.9375rem; color: rgb(var(--sayoji-stone)); }
+.sayoji-attach__reason { margin: 0; font-size: 0.9375rem; color: rgb(var(--sayoji-muted)); }
 .sayoji-attach__price { margin: 0.25rem 0 0.5rem; font-weight: 500; }
 .sayoji-attach__add { width: auto; padding: 0.6rem 1.4rem; }
 
@@ -124,15 +164,15 @@ hr,
 }
 .sayoji-trust__label {
   font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
-  color: rgb(var(--sayoji-stone));
+  color: rgb(var(--sayoji-muted));
 }
 
 /* Module 11 — AI-imagery disclosure line. */
-.sayoji-ai-disclosure { margin: 1rem 0; font-size: 0.8125rem; color: rgb(var(--sayoji-stone)); }
+.sayoji-ai-disclosure { margin: 1rem 0; font-size: 0.8125rem; color: rgb(var(--sayoji-muted)); }
 .sayoji-ai-disclosure a { color: inherit; text-underline-offset: 2px; }
 
 /* Module 3 addendum — size-up note; Module 12 — size guide link. */
-.sayoji-size-note { margin: 0.5rem 0 0; font-size: 0.875rem; color: rgb(var(--sayoji-stone)); }
+.sayoji-size-note { margin: 0.5rem 0 0; font-size: 0.875rem; color: rgb(var(--sayoji-muted)); }
 .sayoji-size-guide { margin: 0.75rem 0; }
 .sayoji-size-guide__link { font-size: 0.8125rem; letter-spacing: 0.06em; text-transform: uppercase; color: inherit; }
 

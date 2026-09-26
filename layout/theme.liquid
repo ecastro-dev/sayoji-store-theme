@@ -124,12 +124,12 @@
       }
 
       :root {
-        --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        --font-body-family: {{ settings.type_body_font.family }}, 'Noto Sans JP', {{ settings.type_body_font.fallback_families }};
         --font-body-style: {{ settings.type_body_font.style }};
         --font-body-weight: {{ settings.type_body_font.weight }};
         --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
 
-        --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        --font-heading-family: {{ settings.type_header_font.family }}, 'Noto Sans JP', {{ settings.type_header_font.fallback_families }};
         --font-heading-style: {{ settings.type_header_font.style }};
         --font-heading-weight: {{ settings.type_header_font.weight }};
 
@@ -280,6 +280,52 @@
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
     {{ 'sayoji-brand.css' | asset_url | stylesheet_tag }}
+    {%- comment -%}
+      R2-05 (Brand v2 §10.2). Self-hosted, OFL:
+      - Archivo variable (wdth 62–125) for the utility / episode face at width 75–87; Shopify's Archivo is static.
+      - Noto Sans JP, subset to the glyphs the live text uses (the ／ of the episode device), so CJK never
+        falls to Anton or Archivo. Both stacks list Noto Sans JP before the generic fallbacks.
+      --collection-accent: collection page -> collection.metafields.custom.accent; PDP -> the product's
+      custom.collection -> its accent; else Faded Ink. Consumed only by the ≥19px-bold / ≥24px classes.
+    {%- endcomment -%}
+    {%- liquid
+      assign sayoji_accent = blank
+      if template.name == 'collection'
+        assign sayoji_accent = collection.metafields.custom.accent.value
+      elsif template.name == 'product'
+        assign sayoji_accent = product.metafields.custom.collection.value.metafields.custom.accent.value
+      endif
+      if sayoji_accent == blank
+        assign sayoji_accent = '#241F22'
+      endif
+    -%}
+    {% style %}
+      @font-face {
+        font-family: 'Sayoji Utility';
+        src: url('{{ 'archivo-var-latin.woff2' | asset_url }}') format('woff2');
+        font-weight: 100 900;
+        font-stretch: 62% 125%;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Noto Sans JP';
+        src: url('{{ 'noto-sans-jp-500-subset.woff2' | asset_url }}') format('woff2');
+        font-weight: 100 600;
+        font-display: swap;
+        unicode-range: U+FF0F;
+      }
+      @font-face {
+        font-family: 'Noto Sans JP';
+        src: url('{{ 'noto-sans-jp-900-subset.woff2' | asset_url }}') format('woff2');
+        font-weight: 700 900;
+        font-display: swap;
+        unicode-range: U+FF0F;
+      }
+      :root {
+        --collection-accent: {{ sayoji_accent }};
+        --font-utility-family: 'Sayoji Utility', 'Noto Sans JP', {{ settings.type_body_font.fallback_families }};
+      }
+    {% endstyle %}
     {%- comment -%}
       R-11 measurement (A-011). SayojiPage is the ONLY place the storefront's page facts —
       page_type, design_id, product_type — cross from Liquid into JS; sayoji-events.js reads them
