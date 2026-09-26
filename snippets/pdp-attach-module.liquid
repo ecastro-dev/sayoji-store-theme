@@ -1,123 +1,113 @@
 {%- comment -%}
-  pdp-attach-module.liquid — R-07 module 5 / R-10 attach (hard gate G5).
+  pdp-attach-module.liquid — R2-09 attach module (hard gate G4). One authored module, at most two rows, each one
+  named product with a real image, its reason line and a single add action. Never a grid.
 
-  ONE product · real image · real reason · single primary action. NOT a
-  recommendation grid. Used on up to three surfaces, each passing a distinct
-  source_module:
-    - PDP, below add-to-cart      → 'pdp_crosssell'
-    - cart drawer / page (1 item) → 'cart_crosssell'
-    - post-ATC mobile confirm     → 'pdp_crosssell'
+    Row 1, lane G: custom.attach_product -> the same design on the other garment.
+                   Reason: tee -> "The same poster, on fleece." · hoodie -> "The same poster, on a tee."
+    Row 2, lane C: custom.attach_collect -> another design's tee.
+                   Reason: "Next on the table: <target title without the garment word>."
+                   (sources in another collection: "Next in <collection title>: …")
+
+  Render guards, in code: a row is skipped when its target is not live on the storefront (a Draft or unpublished
+  reference resolves to nothing), is unavailable, carries the tag `no-attach-target`, is the current product, or
+  (lane C) shares the current design_id. Both rows skipped -> the module does not render.
 
   Params:
-    source_product : the product the shopper is looking at (defaults to `product`)
-    source_module  : attribution string for the emitted add_to_cart
-
-  Target resolution: source_product.metafields.custom.attach_product (product ref) only.
-  (R2-01 removed the pre-rebrand built-in handle map; R2-09 replaces this module.)
-  Reason line: source_product.metafields.custom.attach_reason (content-plane).
-
-  Guard: a target tagged `no-attach-target`, the current product, or an unavailable
-  product never renders.
-  Copy bans (R-10): no "Complete the look" / "Customers also bought" / urgency.
+    source_product : the product the shopper is on (defaults to `product`)
+    source_module  : 'pdp_crosssell' (PDP) · 'cart_crosssell' (drawer / cart page)
+    surface        : 'pdp' (both rows) · 'cart' (one row: lane G if valid, otherwise lane C)
+    default_size   : variant title to preselect (the cart line's size); defaults to the PDP's selected size
+  Banned copy: "Complete the look" · "Customers also bought" · "You may also like" · urgency or scarcity.
 {%- endcomment -%}
 
 {%- liquid
   assign src = source_product | default: product
   assign source_module = source_module | default: 'pdp_crosssell'
+  assign surface = surface | default: 'pdp'
+  assign src_design = src.metafields.custom.design_id.value
 
-  assign target = src.metafields.custom.attach_product.value
+  assign g = src.metafields.custom.attach_product.value
+  assign g_ok = false
+  if g != blank and g.available and g.id != src.id
+    unless g.tags contains 'no-attach-target'
+      assign g_ok = true
+    endunless
+  endif
 
+  assign c = src.metafields.custom.attach_collect.value
+  assign c_ok = false
+  if c != blank and c.available and c.id != src.id
+    unless c.tags contains 'no-attach-target'
+      assign c_design = c.metafields.custom.design_id.value
+      if src_design == blank or c_design != src_design
+        assign c_ok = true
+      endif
+    endunless
+  endif
 
-  assign reason = src.metafields.custom.attach_reason
+  if surface == 'cart'
+    if g_ok
+      assign c_ok = false
+    endif
+  endif
+
+  if src.type == 'Hoodie'
+    assign g_reason = 'The same poster, on a tee.'
+  else
+    assign g_reason = 'The same poster, on fleece.'
+  endif
+
+  assign src_collection = src.metafields.custom.collection.value
+  if src_collection == blank or src_collection.handle == 'on-the-table'
+    assign c_prefix = 'Next on the table: '
+  else
+    assign c_prefix = 'Next in ' | append: src_collection.title | append: ': '
+  endif
+  assign c_name = c.title | remove_last: ' Tee' | remove_last: ' Hoodie'
+  assign c_reason = c_prefix | append: c_name | append: '.'
 -%}
 
-{%- if target == blank or target.tags contains 'no-attach-target' or target.id == src.id or target.available == false -%}
-  {%- comment -%} No valid target → render nothing (absent, not an empty box). {%- endcomment -%}
-{%- else -%}
-  {%- assign tvar = target.selected_or_first_available_variant -%}
-  <div
-    class="sayoji-attach"
-    data-sayoji-attach
-    data-source-module="{{ source_module }}"
-    data-design-id="{{ target.metafields.custom.design_id }}"
-    data-product-type="{{ target.type }}"
-    data-price="{{ tvar.price }}"
-  >
-    <p class="sayoji-eyebrow sayoji-attach__eyebrow">Pairs with</p>
-    <div class="sayoji-attach__body">
-      <a class="sayoji-attach__media" href="{{ target.url }}" tabindex="-1" aria-hidden="true">
-        {%- if target.featured_media -%}
-          {{ target.featured_media | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100,200,300', alt: target.featured_media.alt | escape }}
-        {%- endif -%}
-      </a>
-      <div class="sayoji-attach__info">
-        <a class="sayoji-attach__title" href="{{ target.url }}">{{ target.title | escape }}</a>
-        {%- if reason != blank -%}
-          <p class="sayoji-attach__reason">{{ reason }}</p>
-        {%- endif -%}
-        <p class="sayoji-attach__price">{{ tvar.price | money }}</p>
-        <form
-          action="{{ routes.cart_add_url }}"
-          method="post"
-          enctype="multipart/form-data"
-          class="sayoji-attach__form"
-          data-sayoji-attach-form
-        >
-          <input type="hidden" name="id" value="{{ tvar.id }}">
-          <input type="hidden" name="quantity" value="1">
-          <button
-            type="submit"
-            class="button button--secondary sayoji-attach__add"
-            {% unless tvar.available %}disabled{% endunless %}
-          >
-            {%- if tvar.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
-          </button>
-        </form>
-      </div>
-    </div>
+{%- if g_ok or c_ok -%}
+  <div class="sayoji-attach" data-sayoji-attach data-source-module="{{ source_module }}" data-sayoji-module="6">
+    {%- if g_ok -%}
+      {%- render 'sayoji-attach-row', target: g, reason: g_reason, lane: 'G', default_size: default_size -%}
+    {%- endif -%}
+    {%- if c_ok -%}
+      {%- render 'sayoji-attach-row', target: c, reason: c_reason, lane: 'C', default_size: default_size -%}
+    {%- endif -%}
   </div>
 
   <script>
     (function () {
       var root = document.currentScript.previousElementSibling;
-      if (!root || !root.hasAttribute('data-sayoji-attach')) {
-        root = document.querySelector('[data-sayoji-attach][data-source-module="{{ source_module }}"]');
-      }
-      if (!root) return;
-      var form = root.querySelector('[data-sayoji-attach-form]');
-      if (!form || form.dataset.sayojiBound) return;
-      form.dataset.sayojiBound = '1';
+      if (!root || !root.hasAttribute('data-sayoji-attach')) return;
+      root.querySelectorAll('[data-sayoji-attach-form]').forEach(function (form) {
+        if (form.dataset.sayojiBound) return;
+        form.dataset.sayojiBound = '1';
+        var row = form.closest('[data-sayoji-attach-row]');
 
-      // R-11: add via AJAX, not the plain form POST. The POST navigated to /cart immediately, which
-      // raced the add_to_cart event — trackAddToCart has to read /cart.js first, so the tab could
-      // (and under a slow cart read, did) unload before the payload reached the pixel. Losing that
-      // event loses `source_module` + `is_second_item`, which is the whole attach read (G5).
-      // Behaviour is unchanged for the shopper: item added, then /cart.
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var button = form.querySelector('[type="submit"]');
-        if (button) button.setAttribute('aria-disabled', 'true');
-
-        // Emit first — trackAddToCart is synchronous, so the payload is published before the add
-        // request is even issued and cannot be lost to the navigation below.
-        if (window.Sayoji && Sayoji.trackAddToCart) {
-          Sayoji.trackAddToCart({
-            source_module: root.dataset.sourceModule,
-            design_id: root.dataset.designId || null,
-            product_type: root.dataset.productType || null,
-            variant_id: form.querySelector('[name="id"]').value,
-            price: parseInt(root.dataset.price, 10) || 0
+        // R-11: add via AJAX, not the plain form POST (a navigating POST raced the add_to_cart event).
+        // Emit first: trackAddToCart is synchronous and reads the cart count cached before this add.
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var button = form.querySelector('[type="submit"]');
+          if (button) button.setAttribute('aria-disabled', 'true');
+          if (window.Sayoji && Sayoji.trackAddToCart) {
+            Sayoji.trackAddToCart({
+              source_module: root.dataset.sourceModule,
+              design_id: row.dataset.designId || null,
+              product_type: row.dataset.productType || null,
+              variant_id: form.querySelector('[name="id"]').value,
+              price: parseInt(row.dataset.price, 10) || 0
+            });
+          }
+          fetch('{{ routes.cart_add_url }}.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ items: [{ id: form.querySelector('[name="id"]').value, quantity: 1 }] })
+          }).finally(function () {
+            window.location.href = '{{ routes.cart_url }}';
           });
-        }
-
-        fetch('{{ routes.cart_add_url }}.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({
-            items: [{ id: form.querySelector('[name="id"]').value, quantity: 1 }]
-          })
-        }).finally(function () {
-          window.location.href = '{{ routes.cart_url }}';
         });
       });
     })();

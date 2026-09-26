@@ -1,0 +1,18 @@
+{%- comment -%}
+  R2-08 module 1 — episode eyebrow: SEASON <season> ／ <episode> ／ No.<poster_no, 2-digit>, linking to the
+  product's custom.collection. Accent at 19px bold (.sayoji-episode--accent); Faded Ink when no accent is set
+  (--collection-accent falls back to Faded Ink in theme.liquid). Absent when the product has no collection.
+{%- endcomment -%}
+{%- liquid
+  assign ep_collection = product.metafields.custom.collection.value
+  assign ep_no = product.metafields.custom.poster_no.value
+-%}
+{%- if ep_collection != blank -%}
+  <p class="sayoji-episode sayoji-episode--accent sayoji-pdp-eyebrow" data-sayoji-module="1">
+    <a href="{{ ep_collection.url }}">
+      {%- if ep_collection.metafields.custom.season.value != blank -%}SEASON {{ ep_collection.metafields.custom.season.value }}{%- endif -%}
+      {%- if ep_collection.metafields.custom.episode.value != blank %} ／ {{ ep_collection.metafields.custom.episode.value }}{% endif -%}
+      {%- if ep_no != blank %} ／ No.{% if ep_no < 10 %}0{% endif %}{{ ep_no }}{% endif -%}
+    </a>
+  </p>
+{%- endif -%}

@@ -1,10 +1,9 @@
 {%- comment -%}
-  pdp-size-note.liquid — R-07 module 3 addendum. The size-up note sits with the
-  size selector. Per R-09 hoodies carry the provider runs-small disclaimer
-  VERBATIM; tees carry none. Content-plane, per-product, driven by
-  product.metafields.custom.size_note (so a tee never shows a hoodie's note).
+  R2-08 module 4 — fit note under the size selector. Tee: must contain "drop-shoulder" and "When in doubt, size up"
+  (H-5 may reword around them). Hoodie: the Printful disclaimer, verbatim.
 {%- endcomment -%}
-{%- assign note = product.metafields.custom.size_note -%}
-{%- if note != blank -%}
-  <p class="sayoji-size-note">{{ note }}</p>
+{%- if product.type == 'Hoodie' -%}
+  <p class="sayoji-size-note" data-sayoji-module="4">This hoodie runs small. For the perfect fit, we recommend ordering one size larger than your usual size.</p>
+{%- else -%}
+  <p class="sayoji-size-note" data-sayoji-module="4">Drop-shoulder, relaxed fit. When in doubt, size up.</p>
 {%- endif -%}

@@ -1,23 +1,35 @@
 {%- comment -%}
-  pdp-spec-block.liquid — R-07 module 7, the fact leg. Desktop-expanded /
-  mobile-accordion, emits `spec_block_expand` (event-ready per R-11; no GA4
-  destination here). Content is per-garment (R-09) and MUST differ tee vs hoodie
-  — the tee fibre claim must never appear on a hoodie — so it is content-plane,
-  driven by product.metafields.custom.spec_block (rich text). The position always
-  renders; content fills it. No banned adjectives (G6): facts only.
+  pdp-spec-block.liquid — R2-08 module 8. Desktop expanded / mobile accordion; emits `spec_block_expand` (R-11).
+  Content is per blank, chosen by product type (MC1082 tees, M2580 hoodies), plus the print-method line and the
+  print width only when custom.print_width is set (R2-03 read-back). Facts only (R2-11).
 {%- endcomment -%}
 
-<details class="sayoji-spec" data-sayoji-spec open data-design-id="{{ product.metafields.custom.design_id }}">
+<details class="sayoji-spec" data-sayoji-spec data-sayoji-module="8" open data-design-id="{{ product.metafields.custom.design_id }}">
   <summary class="sayoji-spec__summary">
     <span class="h5">Product details</span>
     <span class="sayoji-spec__toggle" aria-hidden="true"></span>
   </summary>
-  <div class="sayoji-spec__body rte">
-    {%- assign spec = product.metafields.custom.spec_block -%}
-    {%- if spec != blank -%}
-      {{ spec | metafield_tag }}
-    {%- else -%}
-      {%- comment -%} Populatable by content change alone (R-09 facts). {%- endcomment -%}
+  <div class="sayoji-spec__body">
+    {%- comment -%}
+      R2-08 module 8 — per-blank spec. MC1082 (every tee) / M2580 (every hoodie); nothing else may appear here
+      (R2-11: a weight figure lives only in a tee's own spec block and meta description).
+    {%- endcomment -%}
+    <ul class="sayoji-spec__list" role="list">
+      {%- if product.type == 'Hoodie' -%}
+        <li>100% cotton face</li>
+        <li>65% cotton / 35% polyester</li>
+      {%- else -%}
+        <li>180 g/m² (5.5 oz/yd²)</li>
+        <li>100% combed ring-spun cotton</li>
+        <li>Side-seamed</li>
+        <li>Drop-shoulder</li>
+        <li>1×1 ribbed collar</li>
+      {%- endif -%}
+    </ul>
+    <p class="sayoji-spec__line">Front print, direct-to-garment, printed in the USA.</p>
+    {%- assign pw = product.metafields.custom.print_width.value -%}
+    {%- if pw != blank -%}
+      <p class="sayoji-spec__line" data-sayoji-print-width>Print width: {{ pw | escape }}</p>
     {%- endif -%}
   </div>
 </details>
