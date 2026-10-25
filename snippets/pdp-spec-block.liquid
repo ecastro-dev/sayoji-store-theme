@@ -1,6 +1,6 @@
 {%- comment -%}
   pdp-spec-block.liquid — R2-08 module 8. Desktop expanded / mobile accordion; emits `spec_block_expand` (R-11).
-  Content is per blank, chosen by product type (MC1082 tees, M2580 hoodies), plus the print-method line and the
+  Content is per blank, chosen by product type (MC1082 tees, M2580 hoodies, AS Colour 4062 crop tees), plus the print-method line and the
   print width only when custom.print_width is set (R2-03 read-back). Facts only (R2-11).
 {%- endcomment -%}
 
@@ -11,13 +11,21 @@
   </summary>
   <div class="sayoji-spec__body">
     {%- comment -%}
-      R2-08 module 8 — per-blank spec. MC1082 (every tee) / M2580 (every hoodie); nothing else may appear here
+      R2-08 module 8 — per-blank spec. MC1082 (every tee) / M2580 (every hoodie) / AS Colour 4062 (every 'Crop Tee',
+      lines from Printful catalog /products/636, read 2026-10-25; SD2 v2.1 §7.2); nothing else may appear here
       (R2-11: a weight figure lives only in a tee's own spec block and meta description).
     {%- endcomment -%}
     <ul class="sayoji-spec__list" role="list">
       {%- if product.type == 'Hoodie' -%}
         <li>100% cotton face</li>
         <li>65% cotton / 35% polyester</li>
+      {%- elsif product.type == 'Crop Tee' -%}
+        <li>180 g/m² (5.3 oz/yd²)</li>
+        <li>100% combed cotton</li>
+        <li>Cropped length, relaxed fit</li>
+        <li>Side-seamed</li>
+        <li>Drop-shoulder</li>
+        <li>Ribbed crew neck</li>
       {%- else -%}
         <li>180 g/m² (5.5 oz/yd²)</li>
         <li>100% combed ring-spun cotton</li>
