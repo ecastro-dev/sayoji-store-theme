@@ -351,14 +351,17 @@
         setOrigin('pdp_add'); // R2-09: the drawer this add opens is the post-ATC state
         var idEl = form.querySelector('[name="id"]');
         var qtyEl = form.querySelector('[name="quantity"]');
+        // The submitted variant, not the one selected at page load (a size changed after load was sent as the
+        // load-time size). SayojiPage.variants maps id -> {size, price}; the load-time values are the fallback.
+        var v = idEl && p.variants ? p.variants[idEl.value] : null;
         S.trackAddToCart({
           source_module: 'pdp_main',
           design_id: p.design_id,
           product_type: p.product_type,
           variant_id: idEl ? idEl.value : null,
           quantity: qtyEl ? parseInt(qtyEl.value, 10) || 1 : 1,
-          price: p.price || 0,
-          variant_size: p.variant_size || null,
+          price: (v && v.price) || p.price || 0,
+          variant_size: (v && v.size) || p.variant_size || null,
         });
       },
       true
