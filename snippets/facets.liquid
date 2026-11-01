@@ -8,6 +8,9 @@
   - filter_type: {String} Type of filter
   - paginate: {Object}
 
+  - results_count_override: {Number} (Sayoji, R2-07) the count the search guard actually rendered; replaces
+    results.results_count in the count lines when given (main-search.liquid)
+
   Usage:
   {% render 'facets', results: collection, enable_filtering: true, enable_sorting: true, filter_type: 'vertical', paginate: paginate %}
 {% endcomment %}
@@ -18,6 +21,7 @@
 
 {%- liquid
   assign sort_by = results.sort_by | default: results.default_sort_by
+  assign sayoji_rc = results_count_override | default: results.results_count
   assign total_active_values = 0
   assign default_presentation = 'text'
   if results.url
@@ -425,8 +429,8 @@
           <div class="product-count light" role="status">
             <h2 class="product-count__text text-body">
               <span id="ProductCountDesktop">
-                {%- if results.results_count -%}
-                  {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+                {%- if sayoji_rc -%}
+                  {{ 'templates.search.results_with_count' | t: terms: results.terms, count: sayoji_rc }}
                 {%- elsif results.products_count == results.all_products_count -%}
                   {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
                 {%- else -%}
@@ -495,8 +499,8 @@
                   {%- endif -%}
                 </h2>
                 <p class="mobile-facets__count">
-                  {%- if results.results_count -%}
-                    {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+                  {%- if sayoji_rc -%}
+                    {{ 'templates.search.results_with_count' | t: terms: results.terms, count: sayoji_rc }}
                   {%- elsif results.products_count == results.all_products_count -%}
                     {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
                   {%- else -%}
@@ -880,11 +884,11 @@
     <h2 class="product-count__text text-body">
       <span
         id="ProductCount"
-        data-product-count="{{ results.products_count | default: results.results_count }}"
+        data-product-count="{{ results.products_count | default: sayoji_rc }}"
         data-total-count="{{ results.all_products_count | default: results.products_count | default: results.results_count }}"
       >
-        {%- if results.results_count -%}
-          {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+        {%- if sayoji_rc -%}
+          {{ 'templates.search.results_with_count' | t: terms: results.terms, count: sayoji_rc }}
         {%- elsif results.products_count == results.all_products_count -%}
           {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
         {%- else -%}
