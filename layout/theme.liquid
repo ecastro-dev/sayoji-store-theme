@@ -15,11 +15,22 @@
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
     {%- endunless -%}
 
+    {%- comment -%}
+      R2-07 (a-search-fallback-results): Shopify's search page_title carries its own count ("5 results found for
+      …"), which counts the fallback results the keyword guard in main-search.liquid hides. Search pages get a
+      count-free title instead.
+    {%- endcomment -%}
+    {%- liquid
+      assign sayoji_title = page_title
+      if request.page_type == 'search'
+        assign sayoji_title = 'Search results'
+      endif
+    -%}
     <title>
-      {{ page_title }}
+      {{ sayoji_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
       {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- unless sayoji_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
     {% if page_description %}

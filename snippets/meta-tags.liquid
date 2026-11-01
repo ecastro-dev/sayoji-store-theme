@@ -1,5 +1,9 @@
 {%- liquid
   assign og_title = page_title | default: shop.name
+  # R2-07: no result count in a search page's og:title (see layout/theme.liquid)
+  if request.page_type == 'search'
+    assign og_title = 'Search results'
+  endif
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
   assign og_description = page_description | default: shop.description | default: shop.name
