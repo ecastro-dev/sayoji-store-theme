@@ -349,6 +349,18 @@
         product_type: {{ product.type | default: nil | json }},
         price: {{ product.selected_or_first_available_variant.price | default: nil | json }},
         variant_size: {{ product.selected_or_first_available_variant.title | default: nil | json }},
+        {%- comment -%}
+          A-084 (2026-11-01): variant id -> size + price, so the pdp_main add_to_cart names the variant the shopper
+          actually submits. variant_size/price above are the variant selected at page load; a size changed after
+          load was emitted as the load-time size (M added, "S" sent).
+        {%- endcomment -%}
+        variants: {
+          {%- if product -%}
+            {%- for v in product.variants -%}
+              {{ v.id | json }}: { "size": {{ v.title | json }}, "price": {{ v.price | json }} }{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          {%- endif -%}
+        },
         template: {{ template.name | json }},
         {%- comment -%}
           R2-10: product id -> custom.design_id for every live product, so cart-side events (cart_composition)
