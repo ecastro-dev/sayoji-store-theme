@@ -316,11 +316,16 @@
         var idEl = form.querySelector('[name="id"]');
         var button = form.querySelector('[type="submit"]');
         if (button) button.setAttribute('aria-disabled', 'true');
+        // variant_size: the size the shopper is adding, read from the row's own size <select> (its option text is
+        // the variant title, the same value pdp_main sends). Without this every attach add — drawer, cart page,
+        // PDP — carried variant_size: null (A-084, Hub 2026-10-31).
+        var opt = idEl && idEl.options ? idEl.options[idEl.selectedIndex] : null;
         S.trackAddToCart({
           source_module: sourceModule || null,
           design_id: (row && row.dataset.designId) || null,
           product_type: (row && row.dataset.productType) || null,
           variant_id: idEl ? idEl.value : null,
+          variant_size: opt ? opt.text.trim() || null : null,
           price: (row && parseInt(row.dataset.price, 10)) || 0,
         });
         fetch('/cart/add.js', {

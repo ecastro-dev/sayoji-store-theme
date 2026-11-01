@@ -64,7 +64,50 @@
 {%- endstyle -%}
 
 {% paginate search.results by 24 %}
-  <div class="template-search{% unless search.performed and search.results_count > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
+  {%- comment -%}
+    R2-07 keyword guard (a-search-fallback-results, Hub ruling (i) 2026-10-31). Shopify's full search serves
+    fallback/related results when no keyword matches ("kumo" -> 5 hoodies, "zqxjvwk" -> 1). Render a result only
+    if at least one query token occurs in its own fields: for a product the text R2-07 (b1) checks (title, type,
+    tags, vendor, description without tags, variant titles); for a page or article its title and content. If none
+    survive, show the zero-results state instead of the grid and count; when some do, the count is the rendered
+    count. Known limit (accepted): the guard sees this page only (24); the catalogue is one page today.
+  {%- endcomment -%}
+  {%- liquid
+    assign sayoji_tokens = search.terms | downcase | split: ' '
+    assign sayoji_keep = ','
+    assign sayoji_shown = 0
+    for item in search.results
+      assign sayoji_hay = item.title | append: ' '
+      if item.object_type == 'product'
+        assign sayoji_tags = item.tags | join: ' '
+        assign sayoji_hay = sayoji_hay | append: item.type | append: ' ' | append: sayoji_tags | append: ' ' | append: item.vendor
+        for v in item.variants
+          assign sayoji_hay = sayoji_hay | append: ' ' | append: v.title
+        endfor
+      endif
+      assign sayoji_body = item.content | strip_html
+      assign sayoji_hay = sayoji_hay | append: ' ' | append: sayoji_body | downcase
+      assign sayoji_hit = false
+      for tok in sayoji_tokens
+        assign tok = tok | strip
+        if tok != blank and sayoji_hay contains tok
+          assign sayoji_hit = true
+          break
+        endif
+      endfor
+      if sayoji_hit
+        assign sayoji_keep = sayoji_keep | append: item.object_type | append: '-' | append: item.id | append: ','
+        assign sayoji_shown = sayoji_shown | plus: 1
+      endif
+    endfor
+    assign sayoji_empty = false
+    if search.performed and sayoji_shown == 0
+      if search.results_count > 0 or search.filters == empty
+        assign sayoji_empty = true
+      endif
+    endif
+  -%}
+  <div class="template-search{% unless search.performed and sayoji_shown > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
     <div class="template-search__header page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
       <h1 class="h2 center">
         {%- if search.performed -%}
@@ -135,14 +178,14 @@
       </div>
       {%- if search.performed -%}
         {%- unless section.settings.enable_filtering or section.settings.enable_sorting -%}
-          {%- if search.results_count > 0 -%}
+          {%- if sayoji_shown > 0 -%}
             <p role="status">
-              {{ 'templates.search.results_with_count_and_term' | t: terms: search.terms, count: search.results_count }}
+              {{ 'templates.search.results_with_count_and_term' | t: terms: search.terms, count: sayoji_shown }}
             </p>
           {%- endif -%}
         {%- endunless -%}
-        {%- comment -%} R2-07 zero-results state (products only: the forms search type=product). {%- endcomment -%}
-        {%- if search.results_count == 0 and search.filters == empty -%}
+        {%- comment -%} R2-07 zero-results state (products only: the forms search type=product); also when the keyword guard above renders nothing. {%- endcomment -%}
+        {%- if sayoji_empty -%}
           <div class="sayoji-search-empty" role="status" data-sayoji-search-empty>
             <h2 class="sayoji-search-empty__heading">Nothing matches that.</h2>
             <p class="sayoji-search-empty__body">Everything we make is in Season 01.</p>
@@ -155,6 +198,7 @@
       {%- if section.settings.enable_sorting
         and section.settings.filter_type == 'vertical'
         and search.filters != empty
+        and sayoji_empty == false
       -%}
         <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
           <form class="facets-vertical-form" id="FacetSortForm">
@@ -193,7 +237,7 @@
               <h2 class="product-count__text text-body">
                 <span id="ProductCountDesktop">
                   {%- if search.results_count -%}
-                    {{ 'templates.search.results_with_count' | t: terms: search.terms, count: search.results_count }}
+                    {{ 'templates.search.results_with_count' | t: terms: search.terms, count: sayoji_shown }}
                   {%- elsif search.products_count == search.all_products_count -%}
                     {{ 'products.facets.product_count_simple' | t: count: search.products_count }}
                   {%- else -%}
@@ -214,7 +258,7 @@
           class="facets-vertical page-width"
         {% endif %}
       >
-        {%- if search.filters != empty -%}
+        {%- if search.filters != empty and sayoji_empty == false -%}
           {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
             <aside
               aria-labelledby="verticalTitle"
@@ -227,13 +271,17 @@
                 enable_filtering: section.settings.enable_filtering,
                 enable_sorting: section.settings.enable_sorting,
                 filter_type: section.settings.filter_type,
-                paginate: paginate
+                paginate: paginate,
+                results_count_override: sayoji_shown
               %}
             </aside>
           {%- endif -%}
         {%- endif -%}
         <div class="product-grid-container" id="ProductGridContainer">
-          {%- if search.results.size == 0 and search.filters != empty -%}
+          {%- if sayoji_empty -%}
+            {%- comment -%} The guard rendered nothing: no grid, no count (the zero-results state is in the header). The empty #product-grid keeps facets.js's re-render target. {%- endcomment -%}
+            <div class="template-search__results collection collection--empty" id="product-grid" data-id="{{ section.id }}"></div>
+          {%- elsif search.results.size == 0 and search.filters != empty -%}
             <div
               class="template-search__results collection collection--empty{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
               id="product-grid"
@@ -263,9 +311,13 @@
                 role="list"
               >
                 {%- assign skip_card_product_styles = false -%}
+                {%- assign sayoji_n = 0 -%}
                 {%- for item in search.results -%}
+                  {%- assign sayoji_key = ',' | append: item.object_type | append: '-' | append: item.id | append: ',' -%}
+                  {%- unless sayoji_keep contains sayoji_key -%}{%- continue -%}{%- endunless -%}
+                  {%- assign sayoji_n = sayoji_n | plus: 1 -%}
                   {% assign lazy_load = false %}
-                  {%- if forloop.index > 2 -%}
+                  {%- if sayoji_n > 2 -%}
                     {%- assign lazy_load = true -%}
                   {%- endif -%}
 

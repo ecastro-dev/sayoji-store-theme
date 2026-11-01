@@ -133,8 +133,10 @@ hr,
 .sayoji-attach__size { border: 1px solid rgb(var(--sayoji-ink)); border-radius: 0; background: transparent; color: inherit; padding: 0 8px; font-size: 15px; min-height: 40px; }
 .sayoji-attach__add { width: auto; min-height: 40px; padding: 0 16px; }
 
-/* Module 6 — shipping micro-line (plain, not fine print). */
-.sayoji-shipping-line { margin: 1rem 0; font-size: 15px; }
+/* Module 7 (R2-08) — shipping & returns line. R2-05 (1), Hub ruling 2026-10-31: below the 16–17px body range it is
+   meta, and meta is Muted (5.21:1, passes for small legal). Size stays 15px; the words are verbatim (R2-08). */
+.sayoji-shipping-line { margin: 1rem 0; font-size: 15px; color: rgb(var(--sayoji-muted)); }
+.color-scheme-3 .sayoji-shipping-line, .color-scheme-4 .sayoji-shipping-line { color: rgb(var(--color-foreground)); }
 
 /* Module 7 — spec block (desktop expanded / mobile accordion). */
 .sayoji-spec { margin: 1.5rem 0; border-top: 1px solid var(--sayoji-hairline); }
@@ -220,4 +222,12 @@ hr,
 .card__heading, .card__heading a, .sayoji-attach__title {
   font-family: var(--font-utility-family); font-stretch: 80%; font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.12em; font-size: 15px; line-height: 1.3;
+}
+
+/* R2-05 (3), Hub ruling 2026-10-31: Dawn's facet labels ("Filter:", "Sort by:", "N products") are Archivo caps
+   labels, so the utility caps rule applies: the utility face (width 80, inside 75–87) at +0.12em. Size and colour
+   stay Dawn's. Anton's +0.02em is display only. */
+h2.facets__heading, h2.facet-filters__label, h2.facet-filters__label label, h2.product-count__text,
+h2.product-count__text span {
+  font-family: var(--font-utility-family); font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.12em;
 }
