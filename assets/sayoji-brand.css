@@ -231,3 +231,19 @@ h2.facets__heading, h2.facet-filters__label, h2.facet-filters__label label, h2.p
 h2.product-count__text span {
   font-family: var(--font-utility-family); font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.12em;
 }
+
+/* R2-05, Hub ruling 2026-11-01: Dawn's mobile filter labels are the same control as the desktop "Filter:" /
+   "Sort by:" (R2-05 (3)), so they take the same utility caps rule: the "Filter and sort" toggle label and the
+   drawer heading in the utility face (width 80, inside 75–87), caps, +0.12em. Sizes stay Dawn's (15px / 14px);
+   Anton is the display face and 14px is not display. */
+.mobile-facets__open .mobile-facets__open-label,
+h2.mobile-facets__heading {
+  font-family: var(--font-utility-family); font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.12em;
+}
+
+/* R2-05, Hub ruling 2026-11-01: §10.2 corner radius is 0px (print, not app). Dawn's round media-zoom chips
+   (.product__media-icon, and the .thumbnail__badge that shares its rule) become square; fill and border kept. */
+.product__media-icon,
+.thumbnail__badge {
+  border-radius: 0 !important;
+}

@@ -65,15 +65,52 @@
 
 {% paginate search.results by 24 %}
   {%- comment -%}
-    R2-07 keyword guard (a-search-fallback-results, Hub ruling (i) 2026-10-31). Shopify's full search serves
-    fallback/related results when no keyword matches ("kumo" -> 5 hoodies, "zqxjvwk" -> 1). Render a result only
-    if at least one query token occurs in its own fields: for a product the text R2-07 (b1) checks (title, type,
-    tags, vendor, description without tags, variant titles); for a page or article its title and content. If none
-    survive, show the zero-results state instead of the grid and count; when some do, the count is the rendered
-    count. Known limit (accepted): the guard sees this page only (24); the catalogue is one page today.
+    R2-07 keyword guard v2 (a-search-fallback-results: Hub ruling (i) 2026-10-31, guard v2 spec 2026-11-01).
+    Shopify's full search serves fallback/related results when no keyword matches ("kumo" -> 5 hoodies). Render a
+    result only if every query word matches its own fields: for a product the text R2-07 (b1) checks (title, type, tags,
+    vendor, description without tags, variant titles); for a page or article its title and content.
+    v2 matching, query and item text normalised the same way:
+      1. lower-case; - / . , ' removed in the query, -> space in the item text; spaces collapsed; the query phrase
+         "t shirt" -> "tshirt"; the item text padded with a space at each end.
+      2. tokens = the query split on spaces; a token of 4+ letters ending in "s" loses that one "s".
+      3. synonym map (closed list, garment words only; no other entries without a Hub ruling; R2-07 (c) covers it):
+         tshirt, shirt -> also tee · sweatshirt, hooded, hoody -> also hoodie. A synonym adds a token.
+      4. a token of 3+ letters matches as a substring of the item text; a 1-2 letter token only as a whole word.
+         DEVIATION (storeops 2026-11-09, Ed's go; for the Hub to ratify): a result is kept only if EVERY query
+         word matches (the word or one of its synonyms), not any one token. With "any", 22 of 441 multi-word H-3
+         terms kept products through common words ("castle in the sky" -> all 12 via "the"); with "every", 0.
+      5. the guard only removes Shopify's results, never adds one.
+    If none survive, show the zero-results state instead of the grid and count; when some do, the count is the
+    rendered count. Known limit (accepted): the guard sees this page only (24); the catalogue is one page today.
   {%- endcomment -%}
   {%- liquid
-    assign sayoji_tokens = search.terms | downcase | split: ' '
+    assign sayoji_q = search.terms | downcase | remove: '-' | remove: '/' | remove: '.' | remove: ',' | remove: "'" | remove: '|' | remove: '~'
+    assign sayoji_q = sayoji_q | split: ' ' | join: ' ' | prepend: ' ' | append: ' ' | replace: ' t shirt', ' tshirt'
+    assign sayoji_words = sayoji_q | split: ' '
+    assign sayoji_toklist = ''
+    for w in sayoji_words
+      assign tok = w | strip
+      if tok == blank
+        continue
+      endif
+      assign tok_last = tok | slice: -1
+      if tok.size >= 4 and tok_last == 's'
+        assign tok_len = tok.size | minus: 1
+        assign tok = tok | slice: 0, tok_len
+      endif
+      assign sayoji_toklist = sayoji_toklist | append: tok
+      case tok
+        when 'tshirt', 'shirt'
+          assign sayoji_toklist = sayoji_toklist | append: '~tee'
+        when 'sweatshirt', 'hooded', 'hoody'
+          assign sayoji_toklist = sayoji_toklist | append: '~hoodie'
+      endcase
+      assign sayoji_toklist = sayoji_toklist | append: '|'
+    endfor
+    comment
+      One group per query word: the word (stemmed) and its synonyms, '~'-separated.
+    endcomment
+    assign sayoji_tokens = sayoji_toklist | split: '|'
     assign sayoji_keep = ','
     assign sayoji_shown = 0
     for item in search.results
@@ -85,15 +122,35 @@
           assign sayoji_hay = sayoji_hay | append: ' ' | append: v.title
         endfor
       endif
-      assign sayoji_body = item.content | strip_html
+      assign sayoji_body = item.content | replace: '<', ' <' | strip_html
       assign sayoji_hay = sayoji_hay | append: ' ' | append: sayoji_body | downcase
+      assign sayoji_hay = sayoji_hay | replace: '-', ' ' | replace: '/', ' ' | replace: '.', ' ' | replace: ',', ' ' | replace: "'", ' '
+      assign sayoji_hay = sayoji_hay | split: ' ' | join: ' ' | prepend: ' ' | append: ' '
       assign sayoji_hit = false
-      for tok in sayoji_tokens
-        assign tok = tok | strip
-        if tok != blank and sayoji_hay contains tok
-          assign sayoji_hit = true
+      if sayoji_tokens.size > 0
+        assign sayoji_hit = true
+      endif
+      for sayoji_group in sayoji_tokens
+        assign sayoji_alts = sayoji_group | split: '~'
+        assign sayoji_group_hit = false
+        for tok in sayoji_alts
+          if tok.size >= 3
+            if sayoji_hay contains tok
+              assign sayoji_group_hit = true
+              break
+            endif
+          else
+            assign sayoji_word = ' ' | append: tok | append: ' '
+            if sayoji_hay contains sayoji_word
+              assign sayoji_group_hit = true
+              break
+            endif
+          endif
+        endfor
+        unless sayoji_group_hit
+          assign sayoji_hit = false
           break
-        endif
+        endunless
       endfor
       if sayoji_hit
         assign sayoji_keep = sayoji_keep | append: item.object_type | append: '-' | append: item.id | append: ','
@@ -107,7 +164,7 @@
       endif
     endif
   -%}
-  <div class="template-search{% unless search.performed and sayoji_shown > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
+  <div class="template-search{% unless search.performed and sayoji_shown > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding" data-sayoji-guard-shopify-count="{{ search.results_count }}" data-sayoji-guard-shown="{{ sayoji_shown }}" data-sayoji-guard-tokens="{{ sayoji_tokens | join: ' ' | escape }}">
     <div class="template-search__header page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
       <h1 class="h2 center">
         {%- if search.performed -%}
