@@ -247,3 +247,12 @@ h2.mobile-facets__heading {
 .thumbnail__badge {
   border-radius: 0 !important;
 }
+
+/* R2-05 (a), Hub ruling 2026-11-01, "the radius count is unfiltered": the 2026-11-10 unfiltered count on staging
+   found, after the zoom chips, Dawn's round modal Close buttons and the visually hidden size radios (1x1 px,
+   clipped; Chrome's own default radius for an appearance:auto radio). None is a Handoff v2 exception: radius 0. */
+.product-media-modal__toggle,
+.product-popup-modal__toggle,
+.product-form__input input[type='radio'] {
+  border-radius: 0 !important;
+}
