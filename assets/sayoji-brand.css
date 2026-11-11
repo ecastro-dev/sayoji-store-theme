@@ -256,3 +256,11 @@ h2.mobile-facets__heading {
 .product-form__input input[type='radio'] {
   border-radius: 0 !important;
 }
+
+/* R2-05 (a), unfiltered radius count (follow-up): Chrome forces a 50% radius on a native radio while its appearance is
+   auto (author !important, even inline, does not reach it). Dawn's size radios are visually hidden (1x1 px, clipped;
+   the pill label is the control), so appearance:none changes nothing a shopper sees or uses and lets radius 0 apply. */
+.product-form__input input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+}
