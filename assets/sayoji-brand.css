@@ -264,3 +264,16 @@ h2.mobile-facets__heading {
   appearance: none;
   -webkit-appearance: none;
 }
+
+/* CB-07 (site teardown 2026-11-18): top-level menu-drawer rows in the display face at the H2 scale (§10.2),
+   so the drawer reads as Sayoji type, not Dawn's 18px body. Only the first level; sub-menus stay Dawn's.
+   Items stay main-menu (SD2-2.3-no-show-nav). Row height = 32px x 1.05 + 2 x 11px padding ≈ 56px (≥ 44px target). */
+.menu-drawer__navigation > .menu-drawer__menu > li > .menu-drawer__menu-item,
+.menu-drawer__navigation > .menu-drawer__menu > li > details > summary.menu-drawer__menu-item {
+  font-family: var(--font-heading-family);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}

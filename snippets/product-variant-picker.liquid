@@ -51,7 +51,14 @@
         </fieldset>
       {%- elsif picker_type == 'button' -%}
         <fieldset class="js product-form__input product-form__input--pill">
-          <legend class="form__label">{{ option.name }}</legend>
+          {%- comment -%} CB-08 site teardown 2026-11-18: same selected-value legend as the swatch branch above;
+          global.js updates [data-selected-value] on radio change. {%- endcomment -%}
+          <legend class="form__label">
+            {{ option.name }}:
+            <span data-selected-value>
+              {{- option.selected_value -}}
+            </span>
+          </legend>
           {% render 'product-variant-options',
             product: product,
             option: option,
